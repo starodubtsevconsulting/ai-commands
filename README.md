@@ -19,35 +19,6 @@ We call them **commands** because “skill” describes only part of the idea. T
 can teach an AI how to perform a task, but they can also execute repeatable work,
 validate the environment, produce evidence, and offer a purpose-built UI.
 
-## Current extraction status
-
-```mermaid
-flowchart TD
-  Actor["Actor: larger private AI system"]
-  Actor --> Extract["Extract a portable AI Commands subset"]
-  Extract --> Public["Publish command contracts and command-owned assets"]
-  Actor --> Later["Keep profiles and workflows private for now"]
-  Public --> Adopt["Adapt commands to any suitable AI environment"]
-  Later --> Context["Treat profile and workflow references as external context"]
-  Adopt --> Outcome["Outcome: useful standalone public subset"]
-  Context --> Outcome
-```
-
-This repository began as an extracted piece of a larger private project. AI
-Commands are the portion currently selected for open-source publication.
-Profiles, workflows, and their broader runtime integration are referenced by
-some contracts but are not yet part of the public release.
-
-Those terms can be understood as external context: a profile supplies the user,
-organization, policy, and configuration scope; a workflow supplies the process
-that selects and coordinates commands. You do not need the unpublished parent
-system to inspect, adapt, or use a command that is useful to you.
-
-AI Commands are not tied to one AI product or hosting model. You may translate
-their Markdown contracts and optional executable pieces into the environment
-you use—local, hosted, chat-based, agent-based, or otherwise. Evaluate each
-published command on its own scope and decide whether it fits your work.
-
 ## What is an AI Command?
 
 ```mermaid

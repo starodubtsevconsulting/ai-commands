@@ -17,22 +17,23 @@ be understandable from its diagrams and Markdown before anyone runs its code.
 
 ```mermaid
 flowchart TD
-  Actor["Actor: contributor encounters profile or workflow references"]
-  Actor --> Context["Interpret them as external integration coordinates"]
-  Context --> Command["Keep the contributed command independently useful"]
-  Command --> Boundary["Do not invent or require unpublished parent artifacts"]
-  Boundary --> Outcome["Outcome: portable contribution to the extracted subset"]
+  Organization["Organization or user context"]
+  Organization --> Profile["Profile: configuration and policy"]
+  Profile --> Workflow["Workflow: business process"]
+  Workflow --> Commands["AI Commands: reusable capabilities shared here"]
+  Commands --> Outcome["Outcome: commands adapted to your AI environment"]
 ```
 
-AI Commands are currently an open-source extraction from a larger private
-system. Profiles and workflows are not yet published here. Contributions may
-describe the coordinates they consume, but must remain usable without access to
-the private parent repository and must not attempt to reconstruct private
-configuration.
+AI Commands are currently the open-source extraction shared from a larger
+project. A **profile** can be understood as the configuration and policy for
+your organization or user context. A **workflow** is whatever business or work
+process uses the commands. Profiles and workflows are not published here yet;
+the reusable Commands layer is what this repository currently shares.
 
-Contributors may adapt commands for any AI runtime or hosting environment. Keep
-runtime-specific integration behind a bounded adapter and preserve the portable
-Markdown contract.
+You may use or adapt the commands in whichever AI environment you prefer. A
+contribution may reference profile or workflow coordinates, but must keep the
+command independently understandable and must not require unpublished parent
+artifacts.
 
 ## Three-layer command model
 
