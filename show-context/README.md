@@ -43,6 +43,23 @@ This public extraction includes the portable renderer but excludes private
 project discovery, session state, meeting-folder conventions, and launcher
 integration.
 
+## Browser example
+
+```mermaid
+flowchart TD
+  Request["Human asks for an explanation"]
+  Request --> Evidence["Command selects bounded evidence"]
+  Evidence --> Report["Visual-first browser report"]
+```
+
+![A Show Context browser report with a vertical harness-integration diagram](images/browser-report-example.png)
+
+This sanitized example shows the intended result: the reader's question and
+source are explicit, the explanation starts with a vertical diagram, and the
+report opens as a readable browser page. The example source is intentionally a
+portable relative path; generated reports must not expose private machine paths
+or unrelated context.
+
 ## Prerequisites
 
 ```mermaid
