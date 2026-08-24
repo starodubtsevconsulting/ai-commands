@@ -13,6 +13,11 @@ It is a generic presentation command for turning bounded evidence
 into a human-readable report. It is useful on its own and as the presentation
 layer of code review, investigation, handoff, architecture, and testing flows.
 
+**Usually:** inspect relevant folders, source material, conversation history,
+summaries, or reports; select what matters; then present it in the form a human
+can understand most easily. Connect the command to the human-facing agent that
+has access to—and responsibility for—the relevant knowledge.
+
 ## Published package
 
 ```mermaid

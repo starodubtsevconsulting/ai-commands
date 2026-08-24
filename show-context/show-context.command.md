@@ -14,6 +14,10 @@ It is a low-level presentation command: other commands and workflows may compose
 it for code review, investigation, handoff, manual testing, architecture, or any
 other situation where a person needs to understand context before acting.
 
+**Usually:** inspect relevant folders, source material, conversation history,
+summaries, or reports; select what matters; then present it in the form a human
+can understand most easily.
+
 Start with what the person needs to understand. Then show the smallest useful
 visual, explain what it means, and add code or other evidence only when it helps.
 The command presents evidence; it does not decide approval, modify the subject,
@@ -23,15 +27,24 @@ or replace a specialized review command.
 
 ```mermaid
 flowchart TD
-  Intent["Presentation intent"]
-  Intent --> HumanFacing["Human-facing reasoning role"]
-  HumanFacing --> Render["Render a visible report"]
+  Knowledge["Available knowledge and source context"]
+  Knowledge --> Agent["Knowledge-capable human-facing agent"]
+  Agent --> Select["Select, summarize, and explain"]
+  Select --> Render["Render a visible report"]
   Render --> Continue["Continue after shared understanding"]
 ```
 
-- Route to a human-facing reasoning or review role.
+- Route to the human-facing agent responsible for the relevant knowledge.
+- Give that agent access to the bounded folders, source material, conversation
+  history, summaries, or reports needed to answer the human's question.
 - Do not delegate presentation-only work to an execution-only role.
 - A composing command remains responsible for its own domain decisions.
+
+`show-context` defines how context is selected and presented; it does not make a
+weakly informed agent knowledgeable. Report quality depends on the connected
+agent's reasoning capability, its access to the right sources, and the quality
+of the surrounding context. If knowledge is missing, the agent must identify the
+gap rather than invent an explanation.
 
 ## Intent mapping
 
