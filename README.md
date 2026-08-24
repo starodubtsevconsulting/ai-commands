@@ -8,7 +8,7 @@ depending on a private product repository or organization-specific configuration
 
 ## Published commands
 
-- [`agents`](agents/agents.command.md) — portable identity, capability,
+- [`agents`](agents/README.md) — portable identity, capability,
   same-profile communication, and workflow-agent lifecycle routing contract.
 
 Workflow definitions, organization profiles, credentials, and private project

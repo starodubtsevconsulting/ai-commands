@@ -4,6 +4,9 @@ Execution route: `workflow-agent-initializer`.
 
 ## Purpose
 
+For a concise public overview and integration guidance, see
+[`README.md`](README.md).
+
 This is the portable base contract and lightweight routing command for user-facing workflow-agent administration. It owns
 generic agent identity, capability, communication, and packet invariants, but no workflow-specific agent definitions,
 team membership, initialization payloads, profile data, project sources, or runtime mutation logic.
