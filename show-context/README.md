@@ -26,32 +26,38 @@ capability, context-boundary, and communication rules for that connection.
 flowchart TD
   Contract["show-context.command.md"]
   Contract --> Template["show-context.report.template.md"]
-  Template --> Outcome["Portable contract-only command"]
+  Template --> Python["show-context.py"]
+  Python --> Test["show-context.python.test.sh"]
+  Test --> Outcome["Portable executable command"]
 ```
 
 - [`show-context.command.md`](show-context.command.md) defines intent, mapping,
   report structure, safety boundaries, and completion.
 - [`show-context.report.template.md`](show-context.report.template.md) is a
   visual-first starting point for reports.
+- `show-context.py` renders the report as browser-readable HTML using Python's
+  standard library.
+- `show-context.python.test.sh` verifies the portable renderer.
 
-This public extraction is intentionally contract-only. A host may render the
-Markdown with its own browser, IDE, or report surface. Executable and local
-discovery adapters can be added without changing the command contract.
+This public extraction includes the portable renderer but excludes private
+project discovery, session state, meeting-folder conventions, and launcher
+integration.
 
 ## Prerequisites
 
 ```mermaid
 flowchart TD
-  Package["Command contract and report template"]
-  Package --> Host["Markdown-capable host"]
-  Host --> Ready["Ready: no command-specific installation"]
+  Package["Contract, template, and Python renderer"]
+  Package --> Python["Python 3"]
+  Python --> Viewer["Browser or HTML viewer"]
+  Viewer --> Ready["Ready to render"]
 ```
 
-The published package needs only a host that can read Markdown. Mermaid support
-is recommended for rendered diagrams but is not required to read their source.
-An optional HTML renderer may add its own browser and runtime prerequisites; it
-must document and check them without assuming a profile, organization,
-operating system, package manager, or local directory.
+The published executable requires Python 3 and a browser or HTML viewer. It uses
+only the Python standard library. Pygments is optional and improves code colors;
+without it, code remains escaped and readable. Mermaid loads from a public CDN
+when network access is available, and diagram source remains readable without
+it. No command-specific installer is required.
 
 ## Quick start
 
@@ -65,3 +71,10 @@ flowchart TD
 
 Start with the template, answer one question, lead with the smallest useful
 visual, and include only evidence that supports understanding.
+
+```bash
+python3 show-context.py \
+  --file show-context.report.template.md \
+  --title "Review context" \
+  --request "What should the human understand?"
+```

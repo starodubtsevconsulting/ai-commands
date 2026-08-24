@@ -118,40 +118,38 @@ contract.
 
 ```mermaid
 flowchart TD
-  Package["Published contract and template"]
-  Package --> Markdown["Host can read Markdown"]
-  Markdown --> Ready["Ready: no command-specific installation"]
-  Ready --> Optional{"Host wants rendered HTML?"}
-  Optional -->|No| Use["Use host Markdown preview"]
-  Optional -->|Yes| Renderer["Provide a browser-capable renderer"]
+  Package["Contract, template, and Python renderer"]
+  Package --> Python["Python 3"]
+  Python --> Viewer["Browser or HTML viewer"]
+  Viewer --> Ready["Ready to render"]
 ```
 
-The published contract-only command requires only a host that can read Markdown.
-GitHub, an IDE Markdown preview, or an AI environment with Mermaid support may
-display the diagrams directly. No command-specific installer is required.
-
-An optional executable renderer should declare and check its own dependencies.
-A typical implementation needs a browser or HTML viewer and a general-purpose
-runtime such as Python. Mermaid and syntax highlighting may be bundled for
-offline use or loaded from a documented public CDN. An unavailable optional
-highlighter should reduce formatting quality, not prevent the report from being
-read. Installation must require the user's authorization and must not assume an
-operating system, package manager, profile, organization, or local directory.
+The portable executable requires Python 3 and a browser or HTML viewer. It uses
+only the Python standard library. No command-specific installer is required.
+Pygments is optional; without it, code remains escaped and readable. Mermaid is
+loaded from a public CDN when network access is available, while the generated
+page retains readable diagram source when it is unavailable.
 
 ## Usage
 
 ```mermaid
 flowchart TD
-  Question["Choose one human question"]
-  Question --> Template["Copy the report template"]
-  Template --> Evidence["Add visual, explanation, and bounded evidence"]
-  Evidence --> Host["Present it in the available Markdown host"]
+  Source["Choose a report or evidence file"]
+  Source --> Render["Render it with Python"]
+  Render --> Optional["Optionally set title, question, or output"]
+  Optional --> Output["Open the page or use --no-open"]
 ```
 
-Copy `show-context.report.template.md`, replace its placeholder diagram and
-explanation, remove unused sections, and present the resulting Markdown using
-the host's normal preview or browser surface. A future executable adapter may
-automate this flow, but its interface is not part of this contract-only release.
+```bash
+python3 show-context.py \
+  --file <report-or-source-file> \
+  --title "Context title" \
+  --request "Question being answered"
+```
+
+Use `--output <path>` to choose the HTML location and `--no-open` to generate it
+without opening the browser. A Markdown-capable host can also present the report
+template directly without running the renderer.
 
 ## Output and completion
 
