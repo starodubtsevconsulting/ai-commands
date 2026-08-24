@@ -10,7 +10,6 @@ command -v python3 >/dev/null 2>&1 || {
 }
 
 python3 -m venv "$VENV_DIR"
-"$VENV_DIR/bin/python" -m pip install --upgrade pip
 "$VENV_DIR/bin/python" -m pip install -r "$SCRIPT_DIR/requirements.txt"
 
 echo "show-context dependencies installed in: $VENV_DIR"
