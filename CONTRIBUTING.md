@@ -13,6 +13,27 @@ flowchart TD
 Thank you for helping build portable, executable skills. A contribution should
 be understandable from its diagrams and Markdown before anyone runs its code.
 
+## Current project context
+
+```mermaid
+flowchart TD
+  Actor["Actor: contributor encounters profile or workflow references"]
+  Actor --> Context["Interpret them as external integration coordinates"]
+  Context --> Command["Keep the contributed command independently useful"]
+  Command --> Boundary["Do not invent or require unpublished parent artifacts"]
+  Boundary --> Outcome["Outcome: portable contribution to the extracted subset"]
+```
+
+AI Commands are currently an open-source extraction from a larger private
+system. Profiles and workflows are not yet published here. Contributions may
+describe the coordinates they consume, but must remain usable without access to
+the private parent repository and must not attempt to reconstruct private
+configuration.
+
+Contributors may adapt commands for any AI runtime or hosting environment. Keep
+runtime-specific integration behind a bounded adapter and preserve the portable
+Markdown contract.
+
 ## Three-layer command model
 
 ```mermaid
