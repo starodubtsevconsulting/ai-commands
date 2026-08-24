@@ -195,6 +195,35 @@ Use diagrams for behavior, decisions, boundaries, lifecycle, or structure. Use
 small text trees for literal folder layouts. Do not replace meaningful prose
 with decorative diagrams.
 
+## Platform support
+
+```mermaid
+flowchart TD
+  Command["Executable command"]
+  Command --> Mac["macOS: primary and expected to work"]
+  Command --> Linux["Linux: best effort; test when available"]
+  Command --> Windows["Windows: currently untested"]
+  Windows --> Contribution["Compatibility contributions welcome"]
+```
+
+macOS is the project's primary development and validation platform. Executable
+commands should work on macOS unless their contract explicitly states otherwise.
+
+Linux compatibility is a best-effort goal. Some commands have been exercised on
+Ubuntu, but contributors must not describe all Linux distributions as supported
+without current evidence. Prefer portable paths, shell behavior, runtimes, and
+dependency checks so Linux remains straightforward to validate and repair.
+
+Windows is currently untested and is not a promised platform. Do not claim
+Windows support based only on code inspection. Windows compatibility changes are
+welcome when they preserve existing behavior, document platform-specific
+prerequisites, and include repeatable validation evidence.
+
+Contract-only commands remain platform-neutral unless their instructions depend
+on a platform feature. Every executable contribution or pull request must state
+which platforms were actually tested and distinguish tested support from
+best-effort or untested compatibility.
+
 ## Contribution workflow
 
 ```mermaid
@@ -245,7 +274,8 @@ flowchart TD
   Visual --> Contract["Update the command contract and human README"]
   Contract --> Code["Implement only the documented behavior"]
   Code --> Test["Test allowed and blocked paths"]
-  Test --> Outcome["Outcome: documentation-led change"]
+  Test --> Scenario["Run the live scenario when human-visible behavior changes"]
+  Scenario --> Outcome["Outcome: documentation-led change"]
 ```
 
 Behavior begins in documentation. Update the relevant visual, command contract,
@@ -257,6 +287,12 @@ Documentation-first does not mean documentation-only. Executable changes still
 need proportionate automated tests and observable evidence. A documentation
 change that alters command behavior is a contract change and receives the same
 safety review as code.
+
+Use `<name>.scenario.md` for an agent-run live acceptance flow when a command
+has installation, integration, UI, browser, or other human-visible behavior
+that automated tests cannot prove by themselves. Keep the scenario repeatable,
+declare external effects and authorization points, and return an explicit ready
+or blocked result backed by observed evidence.
 
 ## Pull request contract
 
@@ -310,6 +346,8 @@ flowchart TD
 - [ ] Every substantive Markdown section begins with a vertical diagram.
 - [ ] Optional executable, source, configuration, and UI files have a real need.
 - [ ] Tests cover deterministic behavior and important blocked paths.
+- [ ] A live scenario covers installation, integration, or human-visible
+      behavior when automated tests alone cannot establish acceptance.
 - [ ] No credentials, private identifiers, absolute local paths, or generated
       output are committed.
 - [ ] Profile, workflow, and project coordinates are consumed rather than

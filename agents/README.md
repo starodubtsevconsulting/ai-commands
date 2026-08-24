@@ -76,6 +76,31 @@ Those workflow-specific artifacts intentionally do not belong in this command.
 Profiles contain policy references and non-secret identity expectations;
 credentials stay in local, ignored, provider-appropriate storage.
 
+## Workflow-context example
+
+```mermaid
+flowchart TD
+  Base["Portable agents command"]
+  Base --> Workflow["Dev workflow inherits common contracts"]
+  Workflow --> Roles["Workflow defines its own role set"]
+  Roles --> Runtime["Profile-bound logical project displays initialized agents"]
+```
+
+![Illustrative Dev workflow agent team inside a neutral example project](images/dev-workflow-agent-example.png)
+
+This sanitized runtime view illustrates one possible integration. The Dev
+workflow inherits the generic identity, capability, same-scope communication,
+and lifecycle-routing rules from the `agents` command, then supplies its own
+roles and topology. The seven visible entries are an example, not a required
+portable roster: another workflow may define one agent or a different team.
+
+The logical project name combines a profile with the independent workflow. The
+neutral `example-dev` label demonstrates that binding without embedding an
+organization in this public command. A persistent workflow agent factory may
+administer the workflow-owned agents while remaining outside the set it
+reinitializes; that lifecycle choice belongs to the workflow, not this base
+contract.
+
 ## Scope boundary
 
 ```mermaid

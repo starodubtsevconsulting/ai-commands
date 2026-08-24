@@ -78,7 +78,7 @@ identity or forcing every installation to use the optional pieces.
 flowchart TD
   Actor["Actor: portable command package"]
   Actor --> Required["Required: name.command.md"]
-  Required --> Optional["Optional: scripts, config examples, tests, and UI"]
+  Required --> Optional["Optional: scripts, config examples, tests, scenarios, and UI"]
   Optional --> Boundary["Keep credentials and local output outside version control"]
   Boundary --> Outcome["Outcome: self-contained command folder"]
 ```
@@ -92,6 +92,7 @@ added only when the command needs it.
 ├── <name>.command.md            # required AI-readable contract
 ├── <name>.command.sh            # optional executable entry point
 ├── <name>.command.example.conf  # optional safe configuration template
+├── <name>.scenario.md           # optional agent-run live acceptance scenario
 ├── feature.yml                  # optional visual-feature metadata
 ├── app.sh                       # optional standalone UI launcher
 ├── launcher/                    # optional Electron or browser UI
@@ -103,6 +104,14 @@ added only when the command needs it.
 Local credentials and environment-specific configuration must never be
 committed. Publish example configuration with placeholders and keep actual
 values in ignored, provider-appropriate local storage.
+
+Executable tests and live scenarios serve different purposes. Automated tests
+verify scripts and code deterministically. A `<name>.scenario.md` file guides a
+human-facing agent through the command as a user would experience it, including
+prerequisite discovery, authorized installation, execution, visual inspection,
+and evidence-backed completion. A scenario must be safe to rerun, declare any
+external effects, and never treat a passing script test as proof that the full
+human-visible experience works.
 
 ## Design principles
 
@@ -147,6 +156,12 @@ flowchart TD
 Portable identity, capability, same-profile communication, and workflow-agent
 lifecycle routing. It demonstrates a contract-only command with vertical
 decision diagrams and strict profile isolation.
+
+### [`show-context`](show-context/README.md)
+
+Generic human-facing context presentation for reports, code review,
+investigation, handoff, and other composed flows. It provides a visual-first
+contract and a reusable report template while leaving rendering to the host.
 
 More commands will be published one at a time after their organization-specific
 assumptions, credentials, and workflow coupling have been removed.
