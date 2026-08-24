@@ -29,6 +29,21 @@ This public extraction is intentionally contract-only. A host may render the
 Markdown with its own browser, IDE, or report surface. Executable and local
 discovery adapters can be added without changing the command contract.
 
+## Prerequisites
+
+```mermaid
+flowchart TD
+  Package["Command contract and report template"]
+  Package --> Host["Markdown-capable host"]
+  Host --> Ready["Ready: no command-specific installation"]
+```
+
+The published package needs only a host that can read Markdown. Mermaid support
+is recommended for rendered diagrams but is not required to read their source.
+An optional HTML renderer may add its own browser and runtime prerequisites; it
+must document and check them without assuming a profile, organization,
+operating system, package manager, or local directory.
+
 ## Quick start
 
 ```mermaid

@@ -92,41 +92,50 @@ flowchart TD
   Link --> Page
 ```
 
-The executable can render Markdown, text, and source files; select one Markdown
-section; render Mermaid; highlight code and diffs; preview shared images; and
-open explicitly supplied URLs or local paths. Project discovery and local drop
-folders are optional integrations, not part of the portable report contract.
+A host-provided renderer may render Markdown, text, and source files; select one
+Markdown section; render Mermaid; highlight code and diffs; preview shared
+images; and open explicitly supplied URLs or local paths. Project discovery and
+local drop folders are optional integrations, not part of the portable report
+contract.
+
+## Prerequisites
+
+```mermaid
+flowchart TD
+  Package["Published contract and template"]
+  Package --> Markdown["Host can read Markdown"]
+  Markdown --> Ready["Ready: no command-specific installation"]
+  Ready --> Optional{"Host wants rendered HTML?"}
+  Optional -->|No| Use["Use host Markdown preview"]
+  Optional -->|Yes| Renderer["Provide a browser-capable renderer"]
+```
+
+The published contract-only command requires only a host that can read Markdown.
+GitHub, an IDE Markdown preview, or an AI environment with Mermaid support may
+display the diagrams directly. No command-specific installer is required.
+
+An optional executable renderer should declare and check its own dependencies.
+A typical implementation needs a browser or HTML viewer and a general-purpose
+runtime such as Python. Mermaid and syntax highlighting may be bundled for
+offline use or loaded from a documented public CDN. An unavailable optional
+highlighter should reduce formatting quality, not prevent the report from being
+read. Installation must require the user's authorization and must not assume an
+operating system, package manager, profile, organization, or local directory.
 
 ## Usage
 
 ```mermaid
 flowchart TD
-  Source["Choose a report or evidence file"]
-  Source --> Render["Render with --file"]
-  Render --> Optional["Optionally select section, title, request, or result"]
-  Optional --> Output["Open page or print its path with --no-open"]
+  Question["Choose one human question"]
+  Question --> Template["Copy the report template"]
+  Template --> Evidence["Add visual, explanation, and bounded evidence"]
+  Evidence --> Host["Present it in the available Markdown host"]
 ```
 
-```bash
-./show-context.command.sh \
-  --file <report-or-source-file> \
-  --title "Context title" \
-  --request "Question being answered"
-
-./show-context.command.sh \
-  --file <markdown-file> \
-  --section "Review Context" \
-  --no-open
-
-./show-context.command.sh --see latest
-./show-context.command.sh --url <url>
-./show-context.command.sh --path <local-path>
-```
-
-Optional local integrations also support `--project`, `--project-dir`,
-`--feature`, `--output-dir`, `--open-links`, `--see-dir`, and repeated `--url`
-or `--path` values. Run `./show-context.command.sh --help` for the exact local
-interface.
+Copy `show-context.report.template.md`, replace its placeholder diagram and
+explanation, remove unused sections, and present the resulting Markdown using
+the host's normal preview or browser surface. A future executable adapter may
+automate this flow, but its interface is not part of this contract-only release.
 
 ## Output and completion
 
