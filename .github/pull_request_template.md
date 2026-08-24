@@ -32,6 +32,7 @@ flowchart TD
 **Contributor checklist**
 
 - [ ] The purpose and scope are clear and limited to one command or shared convention.
+- [ ] The branch name is short, purpose-based kebab case with no agent or tool attribution.
 - [ ] Every substantive Markdown section starts with a compact `flowchart TD` diagram.
 - [ ] Documentation and diagrams describe every changed behavior before or with the implementation.
 - [ ] The command follows the documented folder structure, or this PR documents a reusable convention change.

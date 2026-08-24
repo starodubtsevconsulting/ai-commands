@@ -212,6 +212,31 @@ guards. Verify Markdown links and vertical diagrams. Search the final diff for
 credentials, private URLs, organization names, local absolute paths, generated
 reports, and unrelated files.
 
+## Branch naming
+
+```mermaid
+flowchart TD
+  Actor["Actor: contributor starts one bounded change"]
+  Actor --> Purpose["Describe the change purpose in a few words"]
+  Purpose --> Format["Use lowercase kebab case"]
+  Format --> Guard["Exclude agent, model, and tool attribution"]
+  Guard --> Outcome["Outcome: short purpose-based branch name"]
+```
+
+Use a short, feature-like branch name that describes the change rather than who
+or what authored it.
+
+Good examples:
+
+- `publish-agents-command`
+- `add-git-command`
+- `improve-command-validation`
+
+Do not prefix branches with an AI agent, model, editor, automation tool, or
+personal identity. Avoid names such as `codex/...`, `chatgpt/...`, or
+`sergii/...`. A branch is project history; its name should describe purpose, not
+authorship.
+
 ## Documentation-first delivery
 
 ```mermaid
