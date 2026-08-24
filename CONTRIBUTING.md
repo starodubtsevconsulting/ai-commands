@@ -195,6 +195,35 @@ Use diagrams for behavior, decisions, boundaries, lifecycle, or structure. Use
 small text trees for literal folder layouts. Do not replace meaningful prose
 with decorative diagrams.
 
+## Platform support
+
+```mermaid
+flowchart TD
+  Command["Executable command"]
+  Command --> Mac["macOS: primary and expected to work"]
+  Command --> Linux["Linux: best effort; test when available"]
+  Command --> Windows["Windows: currently untested"]
+  Windows --> Contribution["Compatibility contributions welcome"]
+```
+
+macOS is the project's primary development and validation platform. Executable
+commands should work on macOS unless their contract explicitly states otherwise.
+
+Linux compatibility is a best-effort goal. Some commands have been exercised on
+Ubuntu, but contributors must not describe all Linux distributions as supported
+without current evidence. Prefer portable paths, shell behavior, runtimes, and
+dependency checks so Linux remains straightforward to validate and repair.
+
+Windows is currently untested and is not a promised platform. Do not claim
+Windows support based only on code inspection. Windows compatibility changes are
+welcome when they preserve existing behavior, document platform-specific
+prerequisites, and include repeatable validation evidence.
+
+Contract-only commands remain platform-neutral unless their instructions depend
+on a platform feature. Every executable contribution or pull request must state
+which platforms were actually tested and distinguish tested support from
+best-effort or untested compatibility.
+
 ## Contribution workflow
 
 ```mermaid
