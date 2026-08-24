@@ -1,8 +1,24 @@
 # agents
 
+```mermaid
+flowchart TD
+  Actor["Actor: workflow-agent request"]
+  Actor --> Resolve["Resolve profile, workflow, and logical project"]
+  Resolve --> Delegate["Route through the workflow-agent initializer"]
+  Delegate --> Outcome["Outcome: identity-bound administration"]
+```
+
 Execution route: `workflow-agent-initializer`.
 
 ## Purpose
+
+```mermaid
+flowchart TD
+  Actor["Actor: user requests workflow-agent administration"]
+  Actor --> Base["Load portable identity and routing invariants"]
+  Base --> Delegate["Resolve and delegate to the selected workflow initializer"]
+  Delegate --> Outcome["Outcome: workflow-owned lifecycle handling"]
+```
 
 For a concise public overview and integration guidance, see
 [`README.md`](README.md).
@@ -122,6 +138,16 @@ initializer composes the current base with those workflow-specific sources. A ch
 the workflow's declared reload or reinitialization path before an existing agent may rely on it.
 
 ## Boundary
+
+```mermaid
+flowchart TD
+  Actor["Actor: portable Agents command"]
+  Actor --> Decision{"Request belongs to portable routing or workflow mutation?"}
+  Decision -->|Portable routing| Allow["Allowed: resolve and delegate within the contract"]
+  Decision -->|Workflow mutation| Block["Prohibited here: workflow initializer owns mutation"]
+  Allow --> Outcome["Outcome: boundary-preserving result"]
+  Block --> Outcome
+```
 
 This command never creates or edits agent, workflow, profile, project, rule, Markdown, or configuration files. It never
 creates, archives, renames, or messages agent tasks itself; never substitutes a managed role for the workflow initializer;

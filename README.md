@@ -1,5 +1,13 @@
 # AI Commands
 
+```mermaid
+flowchart TD
+  Actor["Actor: person or AI needs a reusable capability"]
+  Actor --> Contract["Read the command contract"]
+  Contract --> Execute["Use optional automation or visual tools"]
+  Execute --> Outcome["Outcome: portable executable skill"]
+```
+
 **Pluggable executable skills for AI-assisted work.**
 
 AI Commands combine human-readable guidance with optional deterministic
@@ -35,6 +43,21 @@ replace the command’s declared behavior and safety boundaries.
 
 ## Command shapes
 
+```mermaid
+flowchart TD
+  Actor["Actor: command author"]
+  Actor --> Contract["Start with a Markdown contract"]
+  Contract --> Mechanics{"Need deterministic mechanics?"}
+  Mechanics -->|No| Skill["Contract command"]
+  Mechanics -->|Yes| Script["Executable or integrated command"]
+  Script --> Visual{"Need interaction or rich output?"}
+  Visual -->|No| Flow["Script or composed flow"]
+  Visual -->|Yes| UI["Visual command"]
+  Skill --> Outcome["Outcome: smallest useful command shape"]
+  Flow --> Outcome
+  UI --> Outcome
+```
+
 - **Contract** — Markdown guidance for reasoning, policy, routing, review, or
   coordination.
 - **Executable** — a contract plus scripts for repeatable validation,
@@ -50,6 +73,15 @@ A command can grow from one shape into another without changing its public
 identity or forcing every installation to use the optional pieces.
 
 ## Portable structure
+
+```mermaid
+flowchart TD
+  Actor["Actor: portable command package"]
+  Actor --> Required["Required: name.command.md"]
+  Required --> Optional["Optional: scripts, config examples, tests, and UI"]
+  Optional --> Boundary["Keep credentials and local output outside version control"]
+  Boundary --> Outcome["Outcome: self-contained command folder"]
+```
 
 Only `<name>.command.md` is required. Everything else is optional and should be
 added only when the command needs it.
@@ -74,6 +106,18 @@ values in ignored, provider-appropriate local storage.
 
 ## Design principles
 
+```mermaid
+flowchart TD
+  Actor["Actor: command receives bounded context"]
+  Actor --> Contract["Contract defines intent and limits"]
+  Contract --> Context["Profile, workflow, and project select policy"]
+  Context --> Guard{"Identity, capability, config, and authority valid?"}
+  Guard -->|No| Blocked["BLOCKED: perform no mutation"]
+  Guard -->|Yes| Execute["Use the smallest deterministic or visual adapter"]
+  Execute --> Outcome["Outcome: portable evidence"]
+  Blocked --> Outcome
+```
+
 - **Contract first.** Natural-language intent, inputs, boundaries, and expected
   evidence are readable before execution.
 - **Deterministic where practical.** Scripts own repeatable mechanics,
@@ -89,6 +133,15 @@ values in ignored, provider-appropriate local storage.
 
 ## Published commands
 
+```mermaid
+flowchart TD
+  Actor["Actor: public command candidate"]
+  Actor --> Review["Remove organization and workflow coupling"]
+  Review --> Safety["Verify credentials and private configuration are absent"]
+  Safety --> Publish["Publish contract and command-owned assets"]
+  Publish --> Outcome["Outcome: reusable public command"]
+```
+
 ### [`agents`](agents/README.md)
 
 Portable identity, capability, same-profile communication, and workflow-agent
@@ -99,6 +152,15 @@ More commands will be published one at a time after their organization-specific
 assumptions, credentials, and workflow coupling have been removed.
 
 ## Creating and managing commands
+
+```mermaid
+flowchart TD
+  Actor["Actor: command catalog maintainer"]
+  Actor --> Factory["Factory stages a bounded definition change"]
+  Factory --> Registry["Update definition and route registry together"]
+  Registry --> Validate["Validate references and catalog shape"]
+  Validate --> Outcome["Outcome: atomic managed command change"]
+```
 
 Command catalogs benefit from a small factory that creates, updates, renames,
 and removes definitions together with their execution-route registry. The
@@ -111,11 +173,27 @@ review command additions as complete, self-contained changes.
 
 ## Repository boundary
 
+```mermaid
+flowchart TD
+  Actor["Actor: reusable command"]
+  Actor --> Public["Public: contract and command-owned assets"]
+  Actor --> External["External: workflows, profiles, projects, and credentials"]
+  Public --> Outcome["Outcome: portable core"]
+  External --> Outcome
+```
+
 This repository contains reusable command contracts and their command-owned
 assets. Workflow definitions, organization profiles, project bindings,
 credentials, and private configuration belong outside it. They may reference
 and extend these commands without being included in this repository.
 
 ## License
+
+```mermaid
+flowchart TD
+  Actor["Actor: repository consumer"]
+  Actor --> License["Review the MIT license"]
+  License --> Outcome["Outcome: clear reuse terms"]
+```
 
 [MIT](LICENSE)
