@@ -190,6 +190,64 @@ guards. Verify Markdown links and vertical diagrams. Search the final diff for
 credentials, private URLs, organization names, local absolute paths, generated
 reports, and unrelated files.
 
+## Documentation-first delivery
+
+```mermaid
+flowchart TD
+  Actor["Actor: contributor proposes behavior"]
+  Actor --> Visual["Describe the behavior with a vertical diagram"]
+  Visual --> Contract["Update the command contract and human README"]
+  Contract --> Code["Implement only the documented behavior"]
+  Code --> Test["Test allowed and blocked paths"]
+  Test --> Outcome["Outcome: documentation-led change"]
+```
+
+Behavior begins in documentation. Update the relevant visual, command contract,
+human README, configuration example, and folder template before or together with
+implementation. Code must not introduce an undocumented capability, provider,
+mutation, route, configuration key, or UI behavior.
+
+Documentation-first does not mean documentation-only. Executable changes still
+need proportionate automated tests and observable evidence. A documentation
+change that alters command behavior is a contract change and receives the same
+safety review as code.
+
+## Pull request contract
+
+```mermaid
+flowchart TD
+  Actor["Actor: contributor opens a pull request"]
+  Actor --> Scope["State one bounded command or convention change"]
+  Scope --> Docs["Link the visual and contract changes"]
+  Docs --> Evidence["List tests and validation evidence"]
+  Evidence --> Boundary["Confirm secrets and private coupling are absent"]
+  Boundary --> Decision{"Structure, docs, code, and evidence agree?"}
+  Decision -->|No| Revise["Revise before review"]
+  Decision -->|Yes| Outcome["Outcome: reviewable pull request"]
+  Revise --> Outcome
+```
+
+Every pull request must:
+
+- explain the user-facing purpose and bounded scope;
+- update diagrams and prose before or with changed behavior;
+- preserve the command folder convention or explain a reusable convention
+  change;
+- identify the command shape and which contract, execution, configuration, or
+  visual layers changed;
+- list exact validation performed and important blocked paths covered;
+- disclose external providers, dependencies, generated artifacts, and migration
+  effects;
+- confirm that credentials, real local configuration, private identifiers,
+  absolute local paths, and unrelated files are absent;
+- remain understandable and testable without access to a private parent
+  repository.
+
+Use the repository’s pull-request template. Draft pull requests may contain
+incomplete implementation, but they must still describe the intended contract
+and mark missing evidence honestly. Review approval is based on the complete
+diff, not on claims in the description alone.
+
 ## Review checklist
 
 ```mermaid

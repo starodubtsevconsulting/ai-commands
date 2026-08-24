@@ -164,7 +164,9 @@ flowchart TD
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the three-layer command model,
 contract-only and executable folder templates, visual-first documentation rule,
-configuration boundaries, and review checklist.
+documentation-first pull-request contract, configuration boundaries, and review
+checklist. GitHub pull requests automatically load the same expectations from
+the repository template.
 
 Command catalogs benefit from a small factory that creates, updates, renames,
 and removes definitions together with their execution-route registry. The
