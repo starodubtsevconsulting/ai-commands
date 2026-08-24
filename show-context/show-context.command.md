@@ -34,7 +34,9 @@ flowchart TD
   Render --> Continue["Continue after shared understanding"]
 ```
 
-- Route to the human-facing agent responsible for the relevant knowledge.
+- Route to the human-facing agent responsible for the relevant knowledge. Use
+  the [`agents` command](../agents/agents.command.md) to define and validate that
+  agent's identity, capabilities, context boundary, and communication rules.
 - Give that agent access to the bounded folders, source material, conversation
   history, summaries, or reports needed to answer the human's question.
 - Do not delegate presentation-only work to an execution-only role.
