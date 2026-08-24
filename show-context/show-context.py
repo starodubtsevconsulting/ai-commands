@@ -118,6 +118,9 @@ def markdown_body(text: str, source: Path) -> str:
                 in_list = True
             output.append("<li>" + inline(item.group(1), source) + "</li>")
             continue
+        if in_list and line.strip() and output and output[-1].startswith("<li>"):
+            output[-1] = output[-1][:-5] + " " + inline(line.strip(), source) + "</li>"
+            continue
         if not line.strip():
             flush_paragraph()
             close_list()

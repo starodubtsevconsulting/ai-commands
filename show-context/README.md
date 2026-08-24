@@ -27,8 +27,10 @@ flowchart TD
   Contract["show-context.command.md"]
   Contract --> Template["show-context.report.template.md"]
   Template --> Python["show-context.py"]
-  Python --> Test["show-context.python.test.sh"]
-  Test --> Outcome["Portable executable command"]
+  Python --> Wrapper["show-context.portable.sh"]
+  Wrapper --> Installer["install.sh + requirements.txt"]
+  Installer --> Tests["Automated test + live scenario"]
+  Tests --> Outcome["Portable executable command"]
 ```
 
 - [`show-context.command.md`](show-context.command.md) defines intent, mapping,
@@ -37,7 +39,13 @@ flowchart TD
   visual-first starting point for reports.
 - `show-context.py` renders the report as browser-readable HTML using Python's
   standard library.
+- `show-context.portable.sh` uses the isolated command environment when present
+  and falls back to an available system Python.
+- `install.sh` installs only the dependency declared in `requirements.txt`
+  inside a command-local environment.
 - `show-context.python.test.sh` verifies the portable renderer.
+- `show-context.scenario.md` verifies the clean-install, browser-visible user
+  experience through an agent-run live scenario.
 
 This public extraction includes the portable renderer but excludes private
 project discovery, session state, meeting-folder conventions, and launcher
@@ -70,11 +78,14 @@ flowchart TD
   Viewer --> Ready["Ready to render"]
 ```
 
-The published executable requires Python 3 and a browser or HTML viewer. It uses
-only the Python standard library. Pygments is optional and improves code colors;
-without it, code remains escaped and readable. Mermaid loads from a public CDN
+The published executable requires Python 3 and a browser or HTML viewer. The
+standard-library fallback works without command-specific installation.
+Pygments is optional and improves code colors; without it, code remains escaped
+and readable. For reproducible highlighting, run `./install.sh` after granting
+installation and network authority. It creates a command-local `.venv` and does
+not write into the global Python environment. Mermaid loads from a public CDN
 when network access is available, and diagram source remains readable without
-it. No command-specific installer is required.
+it.
 
 ## How rendering works
 

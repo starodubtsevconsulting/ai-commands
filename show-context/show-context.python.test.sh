@@ -19,5 +19,6 @@ grep -q 'Focused evidence only' "$TMP_DIR/report.html"
 grep -q 'securityLevel:"strict"' "$TMP_DIR/report.html"
 grep -q '<style>' "$TMP_DIR/report.html"
 grep -q '<script type="module">' "$TMP_DIR/report.html"
+grep -q 'Use the smallest useful combination of a table, screenshot, diff, link, or code snippet.' "$TMP_DIR/report.html"
 
 echo 'portable show-context Python tests passed'

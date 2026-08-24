@@ -78,7 +78,7 @@ identity or forcing every installation to use the optional pieces.
 flowchart TD
   Actor["Actor: portable command package"]
   Actor --> Required["Required: name.command.md"]
-  Required --> Optional["Optional: scripts, config examples, tests, and UI"]
+  Required --> Optional["Optional: scripts, config examples, tests, scenarios, and UI"]
   Optional --> Boundary["Keep credentials and local output outside version control"]
   Boundary --> Outcome["Outcome: self-contained command folder"]
 ```
@@ -92,6 +92,7 @@ added only when the command needs it.
 ├── <name>.command.md            # required AI-readable contract
 ├── <name>.command.sh            # optional executable entry point
 ├── <name>.command.example.conf  # optional safe configuration template
+├── <name>.scenario.md           # optional agent-run live acceptance scenario
 ├── feature.yml                  # optional visual-feature metadata
 ├── app.sh                       # optional standalone UI launcher
 ├── launcher/                    # optional Electron or browser UI
@@ -103,6 +104,14 @@ added only when the command needs it.
 Local credentials and environment-specific configuration must never be
 committed. Publish example configuration with placeholders and keep actual
 values in ignored, provider-appropriate local storage.
+
+Executable tests and live scenarios serve different purposes. Automated tests
+verify scripts and code deterministically. A `<name>.scenario.md` file guides a
+human-facing agent through the command as a user would experience it, including
+prerequisite discovery, authorized installation, execution, visual inspection,
+and evidence-backed completion. A scenario must be safe to rerun, declare any
+external effects, and never treat a passing script test as proof that the full
+human-visible experience works.
 
 ## Design principles
 

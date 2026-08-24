@@ -274,7 +274,8 @@ flowchart TD
   Visual --> Contract["Update the command contract and human README"]
   Contract --> Code["Implement only the documented behavior"]
   Code --> Test["Test allowed and blocked paths"]
-  Test --> Outcome["Outcome: documentation-led change"]
+  Test --> Scenario["Run the live scenario when human-visible behavior changes"]
+  Scenario --> Outcome["Outcome: documentation-led change"]
 ```
 
 Behavior begins in documentation. Update the relevant visual, command contract,
@@ -286,6 +287,12 @@ Documentation-first does not mean documentation-only. Executable changes still
 need proportionate automated tests and observable evidence. A documentation
 change that alters command behavior is a contract change and receives the same
 safety review as code.
+
+Use `<name>.scenario.md` for an agent-run live acceptance flow when a command
+has installation, integration, UI, browser, or other human-visible behavior
+that automated tests cannot prove by themselves. Keep the scenario repeatable,
+declare external effects and authorization points, and return an explicit ready
+or blocked result backed by observed evidence.
 
 ## Pull request contract
 
@@ -339,6 +346,8 @@ flowchart TD
 - [ ] Every substantive Markdown section begins with a vertical diagram.
 - [ ] Optional executable, source, configuration, and UI files have a real need.
 - [ ] Tests cover deterministic behavior and important blocked paths.
+- [ ] A live scenario covers installation, integration, or human-visible
+      behavior when automated tests alone cannot establish acceptance.
 - [ ] No credentials, private identifiers, absolute local paths, or generated
       output are committed.
 - [ ] Profile, workflow, and project coordinates are consumed rather than
