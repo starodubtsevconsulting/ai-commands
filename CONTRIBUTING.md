@@ -233,9 +233,8 @@ Good examples:
 - `improve-command-validation`
 
 Do not prefix branches with an AI agent, model, editor, automation tool, or
-personal identity. Avoid names such as `codex/...`, `chatgpt/...`, or
-`sergii/...`. A branch is project history; its name should describe purpose, not
-authorship.
+personal identity. A branch is project history; its name should describe
+purpose, not authorship.
 
 ## Documentation-first delivery
 
