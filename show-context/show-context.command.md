@@ -2,19 +2,20 @@
 
 ```mermaid
 flowchart TD
-  Request["Human asks to understand something"]
-  Request --> Select["Select only relevant evidence"]
-  Select --> Visual["Lead with a diagram or visual"]
-  Visual --> Explain["Explain meaning and decisions"]
-  Explain --> Detail["Add code, diffs, links, or files when useful"]
-  Detail --> Human["Human can understand and act"]
+  Context["Relevant context"]
+  Context --> Explain["Explain it clearly"]
+  Explain --> Human["Human understands"]
 ```
 
-Use `show-context` to turn bounded evidence into a human-readable visual report.
+**Use `show-context` to explain relevant context to a human.**
+
+It turns bounded evidence into a human-readable visual report.
 It is a low-level presentation command: other commands and workflows may compose
 it for code review, investigation, handoff, manual testing, architecture, or any
 other situation where a person needs to understand context before acting.
 
+Start with what the person needs to understand. Then show the smallest useful
+visual, explain what it means, and add code or other evidence only when it helps.
 The command presents evidence; it does not decide approval, modify the subject,
 or replace a specialized review command.
 

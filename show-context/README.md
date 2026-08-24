@@ -2,12 +2,14 @@
 
 ```mermaid
 flowchart TD
-  Evidence["Markdown, code, diff, or other evidence"]
-  Evidence --> Report["Visual-first context report"]
-  Report --> Human["Human understands what matters"]
+  Context["Relevant context"]
+  Context --> Explain["Explain it clearly"]
+  Explain --> Human["Human understands"]
 ```
 
-`show-context` is a generic presentation command for turning bounded evidence
+**Use `show-context` to explain relevant context to a human.**
+
+It is a generic presentation command for turning bounded evidence
 into a human-readable report. It is useful on its own and as the presentation
 layer of code review, investigation, handoff, architecture, and testing flows.
 
