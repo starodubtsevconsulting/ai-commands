@@ -162,6 +162,10 @@ flowchart TD
   Validate --> Outcome["Outcome: atomic managed command change"]
 ```
 
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the three-layer command model,
+contract-only and executable folder templates, visual-first documentation rule,
+configuration boundaries, and review checklist.
+
 Command catalogs benefit from a small factory that creates, updates, renames,
 and removes definitions together with their execution-route registry. The
 factory should treat route names as opaque identifiers: workflows and external

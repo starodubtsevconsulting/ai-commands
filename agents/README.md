@@ -89,4 +89,6 @@ flowchart TD
 
 This command describes portable routing and safety contracts. It does not ship
 a workflow, create runtime tasks itself, contain credentials, or define a
-specific organization’s agents.
+specific organization’s agents. It intentionally uses the contract-only
+template from [`CONTRIBUTING.md`](../CONTRIBUTING.md), so it has no empty
+executable or configuration stubs.
