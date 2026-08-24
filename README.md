@@ -151,6 +151,21 @@ decision diagrams and strict profile isolation.
 More commands will be published one at a time after their organization-specific
 assumptions, credentials, and workflow coupling have been removed.
 
+## Related repositories
+
+```mermaid
+flowchart TD
+  Actor["Actor: reusable workflow"]
+  Actor --> Process["Define a business or work process"]
+  Process --> Commands["Select reusable AI Commands"]
+  Commands --> Outcome["Outcome: coordinated AI-assisted work"]
+```
+
+[AI Workflows](https://github.com/starodubtsevconsulting/ai-workflows) is the
+future public catalog for reusable processes that coordinate commands. It is
+currently a README-only TODO placeholder; no workflow definitions are published
+there yet.
+
 ## Creating and managing commands
 
 ```mermaid
