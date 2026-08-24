@@ -46,6 +46,15 @@ def highlighted(code: str, language: str) -> str:
         return html.escape(code)
 
 
+def highlighting_css() -> str:
+    try:
+        from pygments.formatters import HtmlFormatter
+
+        return HtmlFormatter(style="monokai").get_style_defs("pre code")
+    except ImportError:
+        return ""
+
+
 def code_block(code: str, language: str) -> str:
     language = re.sub(r"[^a-zA-Z0-9_+#.-]", "", language.strip().split(" ", 1)[0])
     if language.lower() == "mermaid":
@@ -130,6 +139,7 @@ def document(source: Path, title: str, request: str) -> str:
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title>
 <style>
+{highlighting_css()}
 body{{margin:0;background:#f5f7fa;color:#1f2933;font:16px/1.55 system-ui,sans-serif}}
 main{{max-width:1000px;min-height:100vh;margin:auto;padding:32px;background:white}}
 .meta{{color:#52606d;border-bottom:1px solid #d9e2ec;padding-bottom:16px}}

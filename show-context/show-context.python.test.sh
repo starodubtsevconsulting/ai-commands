@@ -17,5 +17,7 @@ grep -q 'What should the human understand?' "$TMP_DIR/report.html"
 grep -q 'class="mermaid"' "$TMP_DIR/report.html"
 grep -q 'Focused evidence only' "$TMP_DIR/report.html"
 grep -q 'securityLevel:"strict"' "$TMP_DIR/report.html"
+grep -q '<style>' "$TMP_DIR/report.html"
+grep -q '<script type="module">' "$TMP_DIR/report.html"
 
 echo 'portable show-context Python tests passed'

@@ -166,6 +166,13 @@ links, and no silent mutation of the material being presented. If the available
 evidence cannot answer the question, say what is missing instead of producing a
 confident but ungrounded report.
 
+The Python renderer embeds the HTML structure and CSS directly in the generated
+page. By default `<source>` becomes `<source>.html` beside the input; `--output`
+selects another location. It prints the artifact path and opens the system
+browser unless `--no-open` is used. Mermaid renders in the browser from its
+documented public CDN, with diagram source retained as the fallback. Generated
+HTML is runtime output and must remain outside version control.
+
 ## Tags
 
 ```mermaid

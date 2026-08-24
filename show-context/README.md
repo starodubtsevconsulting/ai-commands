@@ -59,6 +59,28 @@ without it, code remains escaped and readable. Mermaid loads from a public CDN
 when network access is available, and diagram source remains readable without
 it. No command-specific installer is required.
 
+## How rendering works
+
+```mermaid
+flowchart TD
+  Input["Markdown or source file"]
+  Input --> Python["Python converts content to HTML"]
+  Python --> Page["Embed layout, styles, evidence, and diagram source"]
+  Page --> Browser["Browser loads Mermaid and displays the page"]
+  Browser --> Output["Human sees the rendered context"]
+```
+
+The render logic lives in `show-context.py`; there are no prebuilt report files.
+It reads the source, converts supported Markdown and code blocks to HTML, embeds
+the page layout and CSS, writes one standalone HTML artifact, prints its path,
+and opens it with the system browser unless `--no-open` is supplied. Mermaid is
+rendered inside that page by the browser when the public CDN is reachable.
+
+Without `--output`, a source such as `review.md` produces `review.md.html` beside
+the source. Use `--output <path>` to place generated reports in a temporary,
+ignored, or command-owned output folder. Generated HTML is runtime output and
+should not be committed.
+
 ## Quick start
 
 ```mermaid
