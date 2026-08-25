@@ -29,6 +29,8 @@ flowchart TD
 - Same-profile peer communication with fail-closed boundary checks.
 - Capability and route authorization independent of model or tool access.
 - Portable initialization, reinitialization, archival, and inspection routing.
+- Missing-factory bootstrap with exact readiness verification and no managed-team substitution.
+- One-attempt bounded evidence follow-up with correlation-based cycle prevention.
 - Vertical Mermaid diagrams suitable for narrow documentation views.
 
 ## Profile isolation
@@ -113,7 +115,9 @@ flowchart TD
 ```
 
 This command describes portable routing and safety contracts. It does not ship
-a workflow, create runtime tasks itself, contain credentials, or define a
-specific organization’s agents. It intentionally uses the contract-only
-template from [`CONTRIBUTING.md`](../CONTRIBUTING.md), so it has no empty
-executable or configuration stubs.
+a workflow, contain credentials, define a specific organization’s agents, or
+mutate a workflow-managed team itself. Its only direct runtime-task operation is
+the contract's exact missing-factory bootstrap and readiness verification. It
+intentionally uses the contract-only template from
+[`CONTRIBUTING.md`](../CONTRIBUTING.md), so it has no empty executable or
+configuration stubs.
