@@ -51,6 +51,9 @@ This public extraction includes the portable renderer but excludes private
 project discovery, session state, meeting-folder conventions, and launcher
 integration.
 
+The renderer preserves nested Markdown fences. This allows exact Markdown source containing inner Mermaid or code fences
+to remain literal inside an outer `markdown` block instead of leaking into the report as executable diagram markup.
+
 ## Browser example
 
 ```mermaid

@@ -161,7 +161,13 @@ decision diagrams and strict profile isolation.
 
 Generic human-facing context presentation for reports, code review,
 investigation, handoff, and other composed flows. It provides a visual-first
-contract and a reusable report template while leaving rendering to the host.
+contract, reusable report template, and portable Python renderer.
+
+### [`doc`](doc/README.md)
+
+Portable documentation fixture composition, a read-only project-readiness
+check, and reusable principles for diagrams, project context, top-of-file
+source documentation, and runnable-file companions.
 
 More commands will be published one at a time after their organization-specific
 assumptions, credentials, and workflow coupling have been removed.

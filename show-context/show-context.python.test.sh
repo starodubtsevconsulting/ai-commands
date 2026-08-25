@@ -21,4 +21,26 @@ grep -q '<style>' "$TMP_DIR/report.html"
 grep -q '<script type="module">' "$TMP_DIR/report.html"
 grep -q 'Use the smallest useful combination of a table, screenshot, diff, link, or code snippet.' "$TMP_DIR/report.html"
 
+cat > "$TMP_DIR/nested-fence.md" <<'MARKDOWN'
+# Exact Markdown source
+
+````markdown
+## Rule
+
+```mermaid
+flowchart TD
+  A --> B
+```
+````
+MARKDOWN
+
+python3 "$SCRIPT_DIR/show-context.py" \
+  --file "$TMP_DIR/nested-fence.md" \
+  --output "$TMP_DIR/nested-fence.html" \
+  --no-open >/dev/null
+
+grep -q 'language-markdown' "$TMP_DIR/nested-fence.html"
+grep -q 'flowchart TD' "$TMP_DIR/nested-fence.html"
+[[ "$(grep -o 'class="mermaid"' "$TMP_DIR/nested-fence.html" | wc -l | tr -d ' ')" == 0 ]]
+
 echo 'portable show-context Python tests passed'
