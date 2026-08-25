@@ -75,6 +75,8 @@ def markdown_body(text: str, source: Path) -> str:
     code: list[str] = []
     language = ""
     in_code = False
+    fence_char = ""
+    fence_length = 0
     in_list = False
 
     def flush_paragraph() -> None:
@@ -89,16 +91,31 @@ def markdown_body(text: str, source: Path) -> str:
             in_list = False
 
     for line in text.splitlines():
-        if line.startswith("```"):
+        fence = re.match(r"^(`{3,}|~{3,})(.*)$", line)
+        closes_fence = (
+            in_code
+            and fence is not None
+            and fence.group(1)[0] == fence_char
+            and len(fence.group(1)) >= fence_length
+            and not fence.group(2).strip()
+        )
+        if closes_fence:
             flush_paragraph()
             close_list()
-            if in_code:
-                output.append(code_block("\n".join(code), language))
-                code.clear()
-                language = ""
-            else:
-                language = line[3:].strip()
-            in_code = not in_code
+            output.append(code_block("\n".join(code), language))
+            code.clear()
+            language = ""
+            fence_char = ""
+            fence_length = 0
+            in_code = False
+            continue
+        if not in_code and fence is not None:
+            flush_paragraph()
+            close_list()
+            fence_char = fence.group(1)[0]
+            fence_length = len(fence.group(1))
+            language = fence.group(2).strip()
+            in_code = True
             continue
         if in_code:
             code.append(line)

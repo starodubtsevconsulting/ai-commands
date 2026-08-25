@@ -90,6 +90,10 @@ Every generated report should:
 - omit code when code is irrelevant, and use focused snippets instead of dumps;
 - avoid secrets, credentials, private configuration, and unrelated context.
 
+All report diagrams follow the canonical
+[Diagram First Principle](../doc/principles/diagram-first-principle.md). This command defines report composition and
+template selection; it does not restate or weaken that principle.
+
 Use [`show-context.report.template.md`](show-context.report.template.md) as the
 portable starting point. Delete unused sections rather than filling space.
 
@@ -113,6 +117,26 @@ Markdown section; render Mermaid; highlight code and diffs; preview shared
 images; and open explicitly supplied URLs or local paths. Project discovery and
 local drop folders are optional integrations, not part of the portable report
 contract.
+
+## Rendering validation
+
+```mermaid
+flowchart TD
+  Actor["Actor: Show Context renderer or template author"] --> Fixture["Generate Markdown and HTML from deterministic fixtures"]
+  Fixture --> Unit["Verify fence containment, annotation, and diagram containers"]
+  Unit --> Decision{"Decision: mechanics pass and visible acceptance is complete when requested?"}
+  Decision -->|Allowed| Outcome["Outcome: structurally valid report ready for human use"]
+  Decision -->|Prohibited| Blocked["BLOCKED: parser leakage, invalid structure, lost annotation, or visible rendering defect"]
+  Blocked --> Fixture
+```
+
+The renderer recognizes an opening fence's character and length. A nested three-backtick fence cannot close an outer
+four-backtick `markdown` fence. Exact Markdown source remains one highlighted source block; Mermaid inside that source is
+displayed literally and is not promoted to a report-level diagram.
+
+Deterministic tests verify outer-fence containment, the `markdown` language annotation, preserved literal nested Mermaid
+source, and absence of an unintended Mermaid container. Visible appearance remains a manual acceptance check when the
+human asks to inspect the report; mechanical HTML checks do not prove visual quality.
 
 ## Prerequisites
 
