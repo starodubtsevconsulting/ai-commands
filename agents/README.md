@@ -24,13 +24,12 @@ flowchart TD
   Communicate --> Outcome["Outcome: auditable agent behavior"]
 ```
 
-- Explicit `profileId`, `workflowId`, and logical-project coordinates.
+- Explicit `profileId`, `workflowId`, `logicalProjectId`, and `runtimeProjectId` coordinates.
+- `<profile-id>-<workflow-id>` is the logical agent-project boundary; product repositories and folders remain bounded work targets rather than permanent role identity.
 - Immutable, fingerprint-backed initialized agent identity.
 - Same-profile peer communication with fail-closed boundary checks.
 - Capability and route authorization independent of model or tool access.
 - Portable initialization, reinitialization, archival, and inspection routing.
-- Missing-factory bootstrap with exact readiness verification and no managed-team substitution.
-- One-attempt bounded evidence follow-up with correlation-based cycle prevention.
 - Vertical Mermaid diagrams suitable for narrow documentation views.
 
 ## Profile isolation
@@ -98,7 +97,7 @@ portable roster: another workflow may define one agent or a different team.
 
 The logical project name combines a profile with the independent workflow. The
 neutral `example-dev` label demonstrates that binding without embedding an
-organization in this public command. A persistent workflow agent factory may
+organization in this public command. A persistent workflow Admin may
 administer the workflow-owned agents while remaining outside the set it
 reinitializes; that lifecycle choice belongs to the workflow, not this base
 contract.
@@ -117,7 +116,6 @@ flowchart TD
 This command describes portable routing and safety contracts. It does not ship
 a workflow, contain credentials, define a specific organization’s agents, or
 mutate a workflow-managed team itself. Its only direct runtime-task operation is
-the contract's exact missing-factory bootstrap and readiness verification. It
-intentionally uses the contract-only template from
-[`CONTRIBUTING.md`](../CONTRIBUTING.md), so it has no empty executable or
+the contract's exact missing-Admin bootstrap and readiness verification. It
+intentionally uses a contract-only shape, so it has no empty executable or
 configuration stubs.
