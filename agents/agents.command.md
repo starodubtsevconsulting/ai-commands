@@ -41,11 +41,7 @@ flowchart TD
   Actor["Actor: human requests workflow-agent information or lifecycle administration"] --> Decision{"Decision: exactly one profile and workflow resolve explicitly or from one verified runtime binding?"}
   Decision -->|Allowed| Resolve["Allowed: load the selected profile binding and workflow entrypoint"]
   Decision -->|Prohibited| Blocked["BLOCKED: ask for the missing profile or workflow and mutate nothing"]
-  Resolve --> Admin{"Decision: exactly one ready Admin control task exists in the logical project?"}
-  Admin -->|Allowed| Delegate["Allowed: delegate unchanged intent to that workflow's persistent initializer contract"]
-  Admin -->|Missing| Bootstrap["Allowed: create and verify the exact Admin control task, then delegate"]
-  Admin -->|Duplicate or mismatched| Blocked
-  Bootstrap --> Delegate
+  Resolve --> Delegate["Allowed: delegate unchanged intent to the workflow-owned initialization entrypoint"]
   Delegate --> Outcome["Outcome: workflow-owned information or lifecycle result"]
   Blocked --> Outcome
 ```
@@ -56,19 +52,11 @@ instance selection, `<profile-id>-<workflow-id>-<instance-id>`. An explicit prof
 otherwise exactly one verified runtime-bound logical project may supply the pair. Do not infer scope from the repository,
 current working directory, company name, or stale task history.
 
-After resolution, read `<ai_workflows_root>/<workflow-id>/<workflow-id>.workflow.md` and its declared
-`agents/workflow-agent-initializer.md`. Before handing off the user's unchanged informational or lifecycle intent, ensure
-that exactly one active workflow control task with the initializer's exact title exists in the resolved logical project.
-Dev declares this task as `🔑 Admin`; it is human-facing administrative infrastructure, not a routable role. When none
-exists, bootstrap and verify it using the initializer's complete current contract, exact model/reasoning,
-logical-project binding, trusted task ID, and readiness token. A duplicate, foreign, stale, mismatched, agent-invoked, or
-unready control task is `BLOCKED` and permits no governed-team mutation. Reinitialization preserves the one verified
-control task.
-
-Control-task bootstrap is workflow infrastructure, not governed-team membership. `archive all agents`, `delete all
-agents`, and `remove all agents` target only the roles declared by `agents/team.md`; they never target Admin. Only the
-human may manually remove or restore the exact control task. The selected workflow's initializer, `agents/init.md`, and
-`agents/team.md` remain authoritative after bootstrap.
+After resolution, read `<ai_workflows_root>/<workflow-id>/<workflow-id>.workflow.md` and its declared agent-initialization
+entrypoint, then hand off the human's unchanged informational or lifecycle intent. The selected workflow owns whether it
+uses a persistent control task, a direct runtime adapter, or another initialization topology. It also owns role creation,
+replacement, archival, readiness, and scheduler behavior. This command neither requires nor names a control role and
+performs no task mutation while routing the request.
 
 ## Common workflow scope model
 
@@ -322,15 +310,13 @@ the workflow's declared reload or reinitialization path before an existing agent
 flowchart TD
   Actor["Actor: portable Agents command"]
   Actor --> Decision{"Request belongs to portable routing or workflow mutation?"}
-  Decision -->|Portable routing| Allow["Allowed: resolve, ensure one ready Admin, and delegate within the contract"]
+  Decision -->|Portable routing| Allow["Allowed: resolve and delegate within the contract"]
   Decision -->|Workflow mutation| Block["Prohibited here: workflow initializer owns mutation"]
   Allow --> Outcome["Outcome: boundary-preserving result"]
   Block --> Outcome
 ```
 
-This command never creates or edits workflow, profile, project, rule, Markdown, or configuration files. Its only direct
-task mutation is the exact missing-Admin bootstrap defined above: create one workflow-declared Admin, reconcile only that
-fresh task's exact title when required, and verify its identity and readiness token before delegation. It never archives
-an existing Admin, creates or substitutes a governed role, mutates the governed team directly, or performs product,
-tracker, governance, shell, browser, scheduler, or publication work. All governed-team mutation is performed by the
-resolved ready Admin under the workflow-owned lifecycle contract.
+This command never creates, edits, archives, renames, messages, or schedules tasks, agents, workflows, profiles, projects,
+rules, Markdown, or configuration files. It never requires a specific control-role name or topology and never performs
+product, tracker, governance, shell, browser, scheduler, or publication work. All initialization and team mutation are
+performed by the resolved workflow-owned initialization entrypoint under that workflow's lifecycle contract.

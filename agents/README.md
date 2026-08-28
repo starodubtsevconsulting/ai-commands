@@ -29,7 +29,7 @@ flowchart TD
 - Immutable, fingerprint-backed initialized agent identity.
 - Same-profile peer communication with fail-closed boundary checks.
 - Capability and route authorization independent of model or tool access.
-- Portable initialization, reinitialization, archival, and inspection routing.
+- Portable routing of initialization, reinitialization, archival, and inspection requests to workflow-owned lifecycle contracts.
 - Vertical Mermaid diagrams suitable for narrow documentation views.
 
 ## Profile isolation
@@ -97,10 +97,9 @@ portable roster: another workflow may define one agent or a different team.
 
 The logical project name combines a profile with the independent workflow. The
 neutral `example-dev` label demonstrates that binding without embedding an
-organization in this public command. A persistent workflow Admin may
-administer the workflow-owned agents while remaining outside the set it
-reinitializes; that lifecycle choice belongs to the workflow, not this base
-contract.
+organization in this public command. A workflow may use a persistent control
+task, a direct runtime adapter, or another initialization topology; that choice
+belongs entirely to the workflow, not this base contract.
 
 ## Scope boundary
 
@@ -115,7 +114,5 @@ flowchart TD
 
 This command describes portable routing and safety contracts. It does not ship
 a workflow, contain credentials, define a specific organization’s agents, or
-mutate a workflow-managed team itself. Its only direct runtime-task operation is
-the contract's exact missing-Admin bootstrap and readiness verification. It
-intentionally uses a contract-only shape, so it has no empty executable or
-configuration stubs.
+create, initialize, or mutate workflow-managed tasks. It intentionally uses a
+contract-only shape, so it has no empty executable or configuration stubs.
