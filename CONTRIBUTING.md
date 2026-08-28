@@ -54,8 +54,8 @@ values defines a configuration contract resolved from the active profile or
 local command configuration.
 
 The three layers are conceptual, not mandatory empty files. A contract-only
-command such as [`agents`](agents/README.md) intentionally needs no executable or
-local configuration. Do not add stubs merely to imitate a larger command.
+command intentionally needs no executable or local configuration. Do not add
+stubs merely to imitate a larger command.
 
 ## Folder templates
 

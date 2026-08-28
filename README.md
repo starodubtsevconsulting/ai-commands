@@ -151,12 +151,6 @@ flowchart TD
   Publish --> Outcome["Outcome: reusable public command"]
 ```
 
-### [`agents`](agents/README.md)
-
-Portable identity, capability, same-profile communication, and workflow-agent
-lifecycle routing. It demonstrates a contract-only command with vertical
-decision diagrams and strict profile isolation.
-
 ### [`show-context`](show-context/README.md)
 
 Generic human-facing context presentation for reports, code review,
