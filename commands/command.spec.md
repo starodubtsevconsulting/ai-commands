@@ -32,28 +32,37 @@ flowchart TD
   Contract --> ConsumerD["Future agent or harness"]
 ```
 
-Commands are **agent-agnostic by default**. A command does not know which model, agent, workflow, harness, UI, or orchestration system will consume it.
+Commands are **agent-agnostic by default**. A command does not know which model, agent, workflow, harness, UI, or orchestration system will consume it. Specifications describe the capability rather than prescribe how a particular agent should reason or converse.
 
-Therefore specifications must describe the capability itself rather than prescribe how a particular agent should reason or converse.
+The consuming workflow/agent decides how to resolve blocked states: interact with a human, invoke another command, stop a pipeline, retry later, or use another valid mechanism.
 
-Prefer:
+## Suggested agent profile
 
-- `Precondition: fastboot is available.`
-- `Blocked state: DEPENDENCY_MISSING: fastboot.`
-- `Authorization required before data wipe.`
-- `Exactly one supported device must be selected.`
+Every command specification should provide a **suggested agent capability profile**. This is guidance for workflows and launchers selecting an appropriate agent; it does not couple the command to a particular model.
 
-Avoid embedding consumer-specific orchestration such as:
+Use capability-oriented metadata rather than model names, parameter counts, or a made-up numeric intelligence score.
 
-- `Ask the user to install fastboot.`
-- `Wait for the user and retry.`
-- `Use a smart agent to decide what to do.`
+Recommended shape:
 
-The consuming workflow/agent decides how to resolve a blocked state: interact with a human, invoke another command, stop a pipeline, retry later, or use another valid mechanism.
+```yaml
+agent_requirements:
+  reasoning: low | medium | high
+  autonomy: low | medium | high
+  tool_use: optional | required
+  human_interaction: optional | required
+  capabilities:
+    - <specific capability>
+```
 
-A specification may declare **consumer capability requirements** when correct use genuinely requires them, but those requirements must describe capabilities rather than brands/models. Examples: ability to interpret structured failure states, obtain required authorization, access current authoritative sources, or coordinate physical-device actions.
+Interpretation:
 
-Do not introduce a numeric "intelligence level" or model ranking until the repository has a concrete interoperable need and an established measurement system. Prefer explicit required capabilities because they remain meaningful across changing models and agent implementations.
+- `reasoning` — complexity of interpretation, planning, recovery, and decisions expected from the consuming agent.
+- `autonomy` — how much multi-step orchestration the consumer is expected to perform without a workflow spelling out every action.
+- `tool_use` — whether execution requires an agent capable of invoking external tools/commands.
+- `human_interaction` — whether successful orchestration may require obtaining information, authorization, or physical actions from a human.
+- `capabilities` — concrete requirements such as `shell`, `web-access`, `structured-failure-handling`, `human-authorization`, or `physical-device-coordination`.
+
+The profile is **suggested**, not an execution guarantee. A workflow may choose a different agent if it can satisfy the command contract. Do not infer capability solely from model parameter count.
 
 ## Audience and reading model
 
@@ -72,7 +81,7 @@ The primary machine audience includes agents and systems implementing, reviewing
 Write the specification as an executable behavioral contract, not an essay, tutorial, implementation diary, marketing document, or prompt for one particular agent.
 
 - Lead with one compact **At a glance** Mermaid diagram.
-- Immediately summarize **Input**, **Output**, **Execution**, and **Critical boundary**.
+- Immediately summarize **Input**, **Output**, **Execution**, **Critical boundary**, and **Suggested agent profile**.
 - Use precise `must`, `must not`, and `should` language.
 - Prefer diagrams for flows, states, interactions, and boundaries.
 - Express dependencies as preconditions and missing dependencies as explicit blocked/failure states.
@@ -101,7 +110,7 @@ flowchart TD
 
 **Critical boundary:** <authorization, trust, destructive action, external effect, or `None`>
 
-**Consumer capabilities:** <capabilities required from the consuming agent/workflow, or `None`>
+**Suggested agent profile:** <reasoning/autonomy/tool/human-interaction requirements>
 
 ## Scope
 
