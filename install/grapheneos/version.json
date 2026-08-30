@@ -1,0 +1,7 @@
+{
+  "version": "0.0.0",
+  "stage": "draft",
+  "ready": false,
+  "tested": false,
+  "message": "GrapheneOS installation is not implemented or tested yet. This command currently documents the intended workflow only."
+}
