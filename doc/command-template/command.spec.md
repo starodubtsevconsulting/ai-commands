@@ -2,7 +2,37 @@
 
 **Status: DRAFT**
 
-This is the normative behavioral specification for the command. Keep it current as behavior changes.
+This is the normative behavioral specification for the command. It is the source from which behavior is built, changed, reviewed, and validated. Keep it continuously synchronized with the intended behavior.
+
+## Spec-driven development rule
+
+```mermaid
+flowchart TD
+  Request["Human requests new or changed behavior"] --> Read["Read current spec"]
+  Read --> Change["Change spec first"]
+  Change --> Review["Confirm intended behavior is represented"]
+  Review --> Implement["Build / modify implementation from spec"]
+  Implement --> Validate["Validate code, tests, docs against spec"]
+  Validate --> Match{"Everything aligned?"}
+  Match -->|No| Fix["Fix implementation or explicitly revise spec"]
+  Fix --> Validate
+  Match -->|Yes| Done["Change complete"]
+```
+
+This repository follows **spec-driven development (SDD)** for command behavior.
+
+When a human asks an agent to add, remove, or change command behavior, the agent must **read and update the specification first**, before modifying executable implementation. The implementation is then derived from the updated specification.
+
+Do not hack behavior directly into scripts or source code and document it afterward. A behavior change that is not represented in the specification is incomplete.
+
+The specification must remain the current description of **how the command is supposed to work now**, not a historical design document. When requirements change, update the spec rather than accumulating contradictory notes about previous behavior. Git history preserves the past.
+
+Implementation, tests, command documentation, and relevant examples must remain aligned with the specification. If an agent discovers that implementation and spec disagree, it must surface the mismatch and either:
+
+1. change the implementation to match the current spec; or
+2. when the desired behavior itself has changed, update the spec first and then realign implementation.
+
+The specification is therefore both the **input to implementation** and the **reference used to review implementation**.
 
 ## Audience and reading model
 
