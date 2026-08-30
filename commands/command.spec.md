@@ -8,9 +8,9 @@ This is the normative behavioral specification for the command. It is the source
 
 ```mermaid
 flowchart TD
-  Request["Human requests new or changed behavior"] --> Read["Read current spec"]
+  Request["Behavior change requested"] --> Read["Read current spec"]
   Read --> Change["Change spec first"]
-  Change --> Review["Confirm intended behavior is represented"]
+  Change --> Review["Review intended behavior as required by workflow"]
   Review --> Implement["Build / modify implementation from spec"]
   Implement --> Validate["Validate code, tests, docs against spec"]
   Validate --> Match{"Everything aligned?"}
@@ -19,32 +19,65 @@ flowchart TD
   Match -->|Yes| Done["Change complete"]
 ```
 
-This repository follows **spec-driven development (SDD)** for command behavior. When a human asks an agent to add, remove, or change command behavior, the agent must read and update the specification first, before modifying executable implementation.
+This repository follows **spec-driven development (SDD)** for command behavior. A behavior change must be represented in the specification before implementation is changed. The specification describes how the command is supposed to work now; Git history preserves previous behavior.
 
-Do not hack behavior directly into scripts or source code and document it afterward. A behavior change that is not represented in the specification is incomplete. The specification describes how the command is supposed to work now; Git history preserves previous behavior.
+## Agent-agnostic contract
+
+```mermaid
+flowchart TD
+  Command["AI Command"] --> Contract["Capability + preconditions + outputs + failures"]
+  Contract --> ConsumerA["Interactive agent"]
+  Contract --> ConsumerB["Automated workflow"]
+  Contract --> ConsumerC["Human / CLI"]
+  Contract --> ConsumerD["Future agent or harness"]
+```
+
+Commands are **agent-agnostic by default**. A command does not know which model, agent, workflow, harness, UI, or orchestration system will consume it.
+
+Therefore specifications must describe the capability itself rather than prescribe how a particular agent should reason or converse.
+
+Prefer:
+
+- `Precondition: fastboot is available.`
+- `Blocked state: DEPENDENCY_MISSING: fastboot.`
+- `Authorization required before data wipe.`
+- `Exactly one supported device must be selected.`
+
+Avoid embedding consumer-specific orchestration such as:
+
+- `Ask the user to install fastboot.`
+- `Wait for the user and retry.`
+- `Use a smart agent to decide what to do.`
+
+The consuming workflow/agent decides how to resolve a blocked state: interact with a human, invoke another command, stop a pipeline, retry later, or use another valid mechanism.
+
+A specification may declare **consumer capability requirements** when correct use genuinely requires them, but those requirements must describe capabilities rather than brands/models. Examples: ability to interpret structured failure states, obtain required authorization, access current authoritative sources, or coordinate physical-device actions.
+
+Do not introduce a numeric "intelligence level" or model ranking until the repository has a concrete interoperable need and an established measurement system. Prefer explicit required capabilities because they remain meaningful across changing models and agent implementations.
 
 ## Audience and reading model
 
 ```mermaid
 flowchart TD
-  Spec["Command specification"] --> Agent["Primary audience: agents"]
+  Spec["Command specification"] --> Agent["Primary audience: implementing / consuming systems"]
   Spec --> Human["Secondary audience: humans"]
-  Agent --> Detail["Implement, review, repair, test, realign"]
+  Agent --> Detail["Implement, review, repair, test, integrate"]
   Human --> Overview["Understand intended behavior quickly"]
 ```
 
-The primary audience is an AI agent implementing, reviewing, repairing, testing, or extending the command. The secondary audience is a human reviewing it. A human should understand the complete idea from the first screen without needing to read the detailed agent-facing specification.
+The primary machine audience includes agents and systems implementing, reviewing, testing, or consuming the command. The secondary audience is a human reviewing it. A human should understand the complete idea from the first screen without needing to read the detailed machine-facing specification.
 
 ## Style and attitude
 
-Write the specification as an executable behavioral contract, not an essay, tutorial, implementation diary, or marketing document.
+Write the specification as an executable behavioral contract, not an essay, tutorial, implementation diary, marketing document, or prompt for one particular agent.
 
 - Lead with one compact **At a glance** Mermaid diagram.
 - Immediately summarize **Input**, **Output**, **Execution**, and **Critical boundary**.
 - Use precise `must`, `must not`, and `should` language.
-- Prefer diagrams for flows, loops, states, interactions, and boundaries.
-- Describe intended behavior independently of current implementation.
-- Make missing inputs interactive and recoverable where appropriate.
+- Prefer diagrams for flows, states, interactions, and boundaries.
+- Express dependencies as preconditions and missing dependencies as explicit blocked/failure states.
+- Express human authorization as a required boundary without assuming how the consumer obtains it.
+- Describe intended behavior independently of current implementation and consuming agent.
 - Separate authoritative sources from community/context sources.
 - Define success through observable evidence.
 
@@ -52,12 +85,11 @@ Write the specification as an executable behavioral contract, not an essay, tuto
 
 ```mermaid
 flowchart TD
-  Input["Input"] --> Start["Command starts"]
-  Start --> Validate["Validate context and prerequisites"]
-  Validate --> Execute["Perform bounded behavior"]
-  Execute --> Decision{"Human / safety decision when required?"}
-  Decision -->|Blocked or declined| Stop["Stop safely"]
-  Decision -->|Allowed / not required| Verify["Verify observable outcome"]
+  Input["Input"] --> Validate["Validate preconditions"]
+  Validate --> Ready{"Ready?"}
+  Ready -->|No| Blocked["Return explicit blocked / failure state"]
+  Ready -->|Yes| Execute["Perform bounded capability"]
+  Execute --> Verify["Verify observable outcome"]
   Verify --> Output["Output"]
 ```
 
@@ -65,25 +97,27 @@ flowchart TD
 
 **Output:** <observable result>
 
-**Execution:** <how the command achieves the result>
+**Execution:** <how the capability achieves the result>
 
-**Critical boundary:** <human approval, trust, destructive action, external effect, or `None`>
+**Critical boundary:** <authorization, trust, destructive action, external effect, or `None`>
+
+**Consumer capabilities:** <capabilities required from the consuming agent/workflow, or `None`>
 
 ## Scope
 
 Define current behavior and explicit non-goals.
 
-## Inputs
+## Preconditions and dependencies
 
-Define required/optional inputs, environment assumptions, connected resources, and recoverable missing-input states.
+Define required/optional inputs, environment assumptions, connected resources, dependencies, authorization requirements, and explicit blocked states when prerequisites are absent.
 
-## Interaction / behavior
+## Behavior
 
-Define the primary flow, decisions, loops, human interactions, and blocked states.
+Define the command's behavior, decisions, states, and observable transitions without assuming a specific orchestrator.
 
-## States
+## States and failures
 
-List meaningful execution states when interactive, resumable, long-running, or destructive.
+List meaningful execution, blocked, failure, and completion states. Prefer stable machine-readable identifiers where useful.
 
 ## Safety invariants
 
