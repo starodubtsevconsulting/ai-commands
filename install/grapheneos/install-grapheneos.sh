@@ -2,7 +2,7 @@
 set -euo pipefail
 
 COMMAND_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RUNTIME="$COMMAND_DIR/../../runtime/command-runtime.sh"
+RUNTIME="$COMMAND_DIR/../../commands/command-runtime.sh"
 
 if [[ ! -f "$RUNTIME" ]]; then
   echo "ERROR: shared AI Commands runtime not found: $RUNTIME" >&2
