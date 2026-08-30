@@ -4,7 +4,9 @@
 
 Use `install-grapheneos` as an interactive agent-guided installation command for GrapheneOS on a supported Pixel.
 
-For the human motivation, see [`WHY.md`](WHY.md).
+For the human motivation, see [`WHY.md`](WHY.md). The normative behavior is defined by [`install-grapheneos.spec.md`](install-grapheneos.spec.md).
+
+Because this command contains a `*.spec.md`, all behavior changes are governed by the [`sdd`](../../sdd/sdd.command.md) command: **change the specification first, then change implementation and validate alignment.** Whether the changed specification requires explicit human review before implementation is determined by the active workflow.
 
 ## Command boundary
 
@@ -185,4 +187,4 @@ Complete only when the exact device and installed OS are verified, the expected 
 
 ## Tags
 
-`#command` `#ai-command` `#install` `#android` `#pixel` `#grapheneos` `#privacy` `#device-provisioning` `#interactive`
+`#command` `#ai-command` `#install` `#android` `#pixel` `#grapheneos` `#privacy` `#device-provisioning` `#interactive` `#sdd`
