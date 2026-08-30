@@ -4,7 +4,7 @@
 flowchart TD
   Actor["Actor: command contributor"]
   Actor --> Model["Choose the smallest useful command shape"]
-  Model --> Build["Author contract, optional execution, and configuration boundary"]
+  Model --> Build["Author human rationale, contract, optional execution, and configuration boundary"]
   Build --> Validate["Validate documentation, safety, and portability"]
   Validate --> Review["Open one reviewable contribution"]
   Review --> Outcome["Outcome: reusable AI Command"]
@@ -35,34 +35,38 @@ contribution may reference profile or workflow coordinates, but must keep the
 command independently understandable and must not require unpublished parent
 artifacts.
 
-## Three-layer command model
+## Command model
 
 ```mermaid
 flowchart TD
   Actor["Actor: one AI Command"]
-  Actor --> Contract["1. Contract: AI-readable skill"]
-  Contract --> Execution["2. Execution: entry point and supporting code when needed"]
-  Execution --> Configuration["3. Configuration: profile-resolved values when needed"]
+  Actor --> Why["Human rationale: WHY.md"]
+  Why --> Contract["Contract: AI-readable skill"]
+  Contract --> Execution["Execution: entry point and supporting code when needed"]
+  Execution --> Configuration["Configuration: profile-resolved values when needed"]
   Configuration --> Outcome["Outcome: bounded pluggable capability"]
 ```
 
-Every command begins with a `<name>.command.md` contract. A command that performs
-deterministic work adds an executable entry point—usually
+Every command includes a human-facing `WHY.md` explaining why the command exists
+and a `<name>.command.md` contract defining what the AI should do. A command that
+performs deterministic work adds an executable entry point—usually
 `<name>.command.sh`—and may use Python, JavaScript, TypeScript, or another
 appropriate implementation language. A command that needs environment-specific
 values defines a configuration contract resolved from the active profile or
 local command configuration.
 
-The three layers are conceptual, not mandatory empty files. A contract-only
-command intentionally needs no executable or local configuration. Do not add
-stubs merely to imitate a larger command.
+`WHY.md` is deliberately separate from the AI contract. It explains the human
+problem, desired outcome, motivation, and important tradeoffs. Execution rules,
+routing, safety boundaries, inputs, and completion criteria belong in the
+command contract.
 
 ## Folder templates
 
 ```mermaid
 flowchart TD
   Actor["Actor: contributor chooses a template"]
-  Actor --> Decision{"Does the command execute deterministic work?"}
+  Actor --> Why["Write WHY.md"]
+  Why --> Decision{"Does the command execute deterministic work?"}
   Decision -->|No| Contract["Use the contract-only template"]
   Decision -->|Yes| Executable["Use the executable template"]
   Contract --> Outcome["Outcome: minimal complete command"]
@@ -73,6 +77,7 @@ Contract-only:
 
 ```text
 <name>/
+├── WHY.md
 ├── README.md
 └── <name>.command.md
 ```
@@ -81,6 +86,7 @@ Executable or integrated:
 
 ```text
 <name>/
+├── WHY.md
 ├── README.md
 ├── <name>.command.md
 ├── <name>.command.sh
@@ -93,8 +99,27 @@ Executable or integrated:
 └── launcher/                   # optional Electron or browser UI
 ```
 
+A reusable starting point for the rationale is available at
+[`doc/command-template/WHY.md`](doc/command-template/WHY.md).
+
 Keep generated reports, installed dependencies, credentials, and real local
 configuration out of version control.
+
+## Human rationale layer
+
+```mermaid
+flowchart TD
+  Actor["Actor: human reads WHY.md"]
+  Actor --> Problem["Understand the problem"]
+  Problem --> Value["Understand why solving it matters"]
+  Value --> Tradeoffs["Understand limitations and tradeoffs"]
+  Tradeoffs --> Outcome["Outcome: reason to keep and use the command"]
+```
+
+`WHY.md` should be short, human-facing, and implementation-independent. Explain
+the problem being solved, why it matters, the control or capability gained, and
+important limitations. Do not duplicate execution steps from the command
+contract.
 
 ## Contract layer
 
@@ -108,9 +133,10 @@ flowchart TD
   Evidence --> Outcome["Outcome: self-contained AI-readable contract"]
 ```
 
-The contract is the source of truth. It should explain what the command means,
-how natural-language intent maps to it, which context it consumes, what it may
-change, what it must never do, and which evidence demonstrates completion.
+The contract is the source of truth for execution. It should explain what the
+command means, how natural-language intent maps to it, which context it consumes,
+what it may change, what it must never do, and which evidence demonstrates
+completion.
 
 Portable commands must not hardcode an organization, client, private repository,
 credential, workflow team, or local filesystem path. External workflows and
@@ -270,7 +296,8 @@ purpose, not authorship.
 ```mermaid
 flowchart TD
   Actor["Actor: contributor proposes behavior"]
-  Actor --> Visual["Describe the behavior with a vertical diagram"]
+  Actor --> Why["Explain why in WHY.md"]
+  Why --> Visual["Describe behavior with a vertical diagram"]
   Visual --> Contract["Update the command contract and human README"]
   Contract --> Code["Implement only the documented behavior"]
   Code --> Test["Test allowed and blocked paths"]
@@ -278,10 +305,11 @@ flowchart TD
   Scenario --> Outcome["Outcome: documentation-led change"]
 ```
 
-Behavior begins in documentation. Update the relevant visual, command contract,
-human README, configuration example, and folder template before or together with
-implementation. Code must not introduce an undocumented capability, provider,
-mutation, route, configuration key, or UI behavior.
+Behavior begins with the reason and documentation. Update `WHY.md`, the relevant
+visual, command contract, human README, configuration example, and folder
+template before or together with implementation. Code must not introduce an
+undocumented capability, provider, mutation, route, configuration key, or UI
+behavior.
 
 Documentation-first does not mean documentation-only. Executable changes still
 need proportionate automated tests and observable evidence. A documentation
@@ -300,7 +328,7 @@ or blocked result backed by observed evidence.
 flowchart TD
   Actor["Actor: contributor opens a pull request"]
   Actor --> Scope["State one bounded command or convention change"]
-  Scope --> Docs["Link the visual and contract changes"]
+  Scope --> Docs["Link rationale, visual, and contract changes"]
   Docs --> Evidence["List tests and validation evidence"]
   Evidence --> Boundary["Confirm secrets and private coupling are absent"]
   Boundary --> Decision{"Structure, docs, code, and evidence agree?"}
@@ -312,18 +340,16 @@ flowchart TD
 Every pull request must:
 
 - explain the user-facing purpose and bounded scope;
+- include or update the command's human-facing `WHY.md`;
 - update diagrams and prose before or with changed behavior;
-- preserve the command folder convention or explain a reusable convention
-  change;
-- identify the command shape and which contract, execution, configuration, or
-  visual layers changed;
+- preserve the command folder convention or explain a reusable convention change;
+- identify the command shape and which rationale, contract, execution,
+  configuration, or visual layers changed;
 - list exact validation performed and important blocked paths covered;
-- disclose external providers, dependencies, generated artifacts, and migration
-  effects;
+- disclose external providers, dependencies, generated artifacts, and migration effects;
 - confirm that credentials, real local configuration, private identifiers,
   absolute local paths, and unrelated files are absent;
-- remain understandable and testable without access to a private parent
-  repository.
+- remain understandable and testable without access to a private parent repository.
 
 Use the repository’s pull-request template. Draft pull requests may contain
 incomplete implementation, but they must still describe the intended contract
@@ -335,21 +361,20 @@ diff, not on claims in the description alone.
 ```mermaid
 flowchart TD
   Actor["Actor: reviewer evaluates a command"]
-  Actor --> Contract["Contract complete and visual first?"]
+  Actor --> Why["Human reason clear?"]
+  Why --> Contract["Contract complete and visual first?"]
   Contract --> Execution["Execution deterministic and tested when present?"]
   Execution --> Config["Configuration portable and secret-free?"]
   Config --> Boundary["Workflow and profile coupling externalized?"]
   Boundary --> Outcome["Outcome: approve or return bounded findings"]
 ```
 
+- [ ] The command has a concise human-facing `WHY.md`.
 - [ ] The command has a concise human README and required command contract.
 - [ ] Every substantive Markdown section begins with a vertical diagram.
 - [ ] Optional executable, source, configuration, and UI files have a real need.
 - [ ] Tests cover deterministic behavior and important blocked paths.
-- [ ] A live scenario covers installation, integration, or human-visible
-      behavior when automated tests alone cannot establish acceptance.
-- [ ] No credentials, private identifiers, absolute local paths, or generated
-      output are committed.
-- [ ] Profile, workflow, and project coordinates are consumed rather than
-      guessed.
+- [ ] A live scenario covers installation, integration, or human-visible behavior when automated tests alone cannot establish acceptance.
+- [ ] No credentials, private identifiers, absolute local paths, or generated output are committed.
+- [ ] Profile, workflow, and project coordinates are consumed rather than guessed.
 - [ ] The change is self-contained and links resolve inside the repository.
