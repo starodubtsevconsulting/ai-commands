@@ -2,7 +2,42 @@
 
 **Status: DRAFT**
 
-This file is the normative behavioral specification for the `install-grapheneos` command. Agents implementing, reviewing, repairing, or extending the command must keep implementation aligned with this specification.
+This file is the normative behavioral specification for the `install-grapheneos` command. It is primarily for agents implementing, reviewing, repairing, or extending the command, but it should also let a human understand the complete behavior at a glance.
+
+## At a glance
+
+```mermaid
+flowchart TD
+  User["You: Install GrapheneOS"] --> USB{"Pixel connected by USB?"}
+  USB -->|No| Connect["Connect Pixel with USB data cable"]
+  Connect --> USB
+  USB -->|Yes| Detect["Detect exact Pixel + current state"]
+  Detect --> Support{"Supported by current GrapheneOS release?"}
+  Support -->|No| Block["Stop and explain why"]
+  Support -->|Yes| Latest["Find current stable release"]
+  Latest --> Verify["Download + verify official artifacts"]
+  Verify --> Explain["Explain install plan + data wipe"]
+  Explain --> Approve{"You approve destructive changes?"}
+  Approve -->|No| Stop["Stop safely"]
+  Approve -->|Yes| Unlock["Prepare / unlock bootloader"]
+  Unlock --> Human["You confirm required action on phone"]
+  Human --> Flash["Install GrapheneOS over USB"]
+  Flash --> Relock["Relock bootloader"]
+  Relock --> Confirm["You confirm required action on phone"]
+  Confirm --> Boot["Boot GrapheneOS"]
+  Boot --> Final["Verify OS + security state"]
+  Final --> Done["Installed and verified"]
+```
+
+**Input:** supported Pixel + USB data cable + host computer + internet + human available for confirmations.
+
+**Output:** verified GrapheneOS installation with the expected locked/security state.
+
+**Execution:** agent orchestrates the official GrapheneOS CLI procedure; the official WebUSB installer is the human-facing fallback.
+
+**Critical boundary:** the agent may automate safe checks and mechanical work, but must stop and obtain explicit human approval before destructive/security-sensitive operations and must wait for physical confirmations required on the phone.
+
+Everything below defines this overview precisely enough for an agent to implement and validate it.
 
 ## Source of truth
 
