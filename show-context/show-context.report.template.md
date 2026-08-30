@@ -11,6 +11,29 @@ flowchart TD
 State in one or two sentences what the reader should understand from this
 report.
 
+## Modified Markdown rules
+
+Delete this section when the report is not reviewing changed Markdown rules.
+For each modified path, inject every complete changed normative section before
+summaries or conclusions. Do not use ellipses inside a changed section.
+
+### `<exact/path/to/rule.md>`
+
+````markdown
+## Exact changed section heading
+
+```mermaid
+flowchart TD
+  Actor["Actor"] --> Decision{"Decision: exact review decision?"}
+  Decision -->|Allowed| Route["Allowed: exact route"]
+  Decision -->|Prohibited| Blocked["BLOCKED: exact prohibited route"]
+  Route --> Outcome["Outcome: exact result"]
+  Blocked --> Outcome
+```
+
+Exact current prose for the complete changed normative section.
+````
+
 ## What the visual shows
 
 ```mermaid
