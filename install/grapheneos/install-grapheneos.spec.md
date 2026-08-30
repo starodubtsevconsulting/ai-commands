@@ -12,7 +12,8 @@ flowchart TD
   USB -->|No| Connect["Connect Pixel with USB data cable"]
   Connect --> USB
   USB -->|Yes| Detect["Detect exact Pixel + current state"]
-  Detect --> Support{"Supported by current GrapheneOS release?"}
+  Detect --> Dependencies["Check host dependencies"]
+  Dependencies --> Support{"Supported by current GrapheneOS release?"}
   Support -->|No| Block["Stop and explain why"]
   Support -->|Yes| Latest["Find current stable release"]
   Latest --> Verify["Download + verify official artifacts"]
@@ -41,45 +42,11 @@ Everything below defines this overview precisely enough for an agent to implemen
 
 ## Source of truth
 
-```mermaid
-flowchart TD
-  Change["Requested behavior change"] --> Spec["Update specification"]
-  Spec --> Contract["Update command usage contract"]
-  Spec --> Implementation["Implement behavior"]
-  Implementation --> Tests["Validate against specification"]
-  Tests --> Decision{"Implementation matches spec?"}
-  Decision -->|No| Implementation
-  Decision -->|Yes| Done["Command is aligned"]
-```
-
-Behavior is specified here before or together with implementation. When code and this specification disagree, treat the mismatch as a defect and resolve it deliberately; do not silently redefine behavior from the current implementation.
+Behavior is specified here before implementation. When code and this specification disagree, follow the repository SDD command: update intended behavior in the specification first, then realign implementation and tests.
 
 ## Scope
 
-Version 1 covers **initial GrapheneOS installation only**. Updating an already-installed GrapheneOS device, ongoing administration, backup/restore, and general Android management are future capabilities and must not be inferred into this implementation.
-
-## Primary interaction
-
-```mermaid
-flowchart TD
-  User["User: Install GrapheneOS"] --> Detect["Detect connected Pixel over USB"]
-  Detect --> Found{"Exactly one supported device?"}
-  Found -->|No device| Ask["Ask user to connect Pixel with USB data cable"]
-  Ask --> Detect
-  Found -->|Ambiguous| Resolve["Ask user to resolve device ambiguity"]
-  Resolve --> Detect
-  Found -->|Yes| Identify["Identify exact model and current state"]
-  Identify --> Release["Resolve current supported stable release"]
-  Release --> Plan["Present plan, prerequisites, wipe warning"]
-  Plan --> Approve{"Human approves destructive stage?"}
-  Approve -->|No| Stop["Stop without destructive changes"]
-  Approve -->|Yes| Install["Run official CLI installation flow"]
-  Install --> Physical["Pause for required on-device confirmations"]
-  Physical --> Verify["Verify OS and bootloader/security state"]
-  Verify --> Done["Report successful installation"]
-```
-
-The command is interactive. Missing prerequisites are recoverable states whenever possible. The agent should explain the next concrete action, wait for the human, re-check state, and continue from the last verified stage.
+Version 1 covers **initial GrapheneOS installation only**. Updating an already-installed GrapheneOS device, ongoing administration, backup/restore, and general Android management are future capabilities.
 
 ## Inputs
 
@@ -103,6 +70,49 @@ Required inputs:
 
 Bluetooth is not an installation transport for this command.
 
+## Dependencies
+
+```mermaid
+flowchart TD
+  Start["Preflight"] --> Detect["Detect host OS + architecture"]
+  Detect --> Required["Resolve requirements from current official GrapheneOS CLI guide"]
+  Required --> Check["Check each required tool"]
+  Check --> Missing{"Anything missing?"}
+  Missing -->|No| Ready["Dependencies satisfied"]
+  Missing -->|Yes| Explain["Explain missing dependency + why it is needed"]
+  Explain --> Approve{"Human approves host installation?"}
+  Approve -->|No| Block["BLOCKED: prerequisites missing"]
+  Approve -->|Yes| Install["Install through trusted platform source"]
+  Install --> Verify["Verify dependency is available"]
+  Verify --> Check
+```
+
+Dependencies must be explicit and validated before phone mutation begins.
+
+Known core requirements for the CLI-oriented implementation include:
+
+- a supported bare-metal host operating system and architecture;
+- current Android SDK Platform Tools providing `adb` and `fastboot` where required by the current official procedure;
+- standard host utilities required by the current GrapheneOS CLI guide for downloading, extracting, hashing/signature verification, and executing the official factory-image installer;
+- sufficient free disk space for release artifacts and extraction;
+- working internet access to authoritative GrapheneOS/Android sources;
+- a reliable USB data connection.
+
+**Python is not a baseline dependency unless the implementation or current official GrapheneOS procedure actually requires it.** The agent must not infer that Python is required merely because it could be convenient to implement orchestration in Python.
+
+Dependency versions and exact utility names that can change over time must be resolved from the current official GrapheneOS CLI documentation rather than frozen indefinitely in this specification.
+
+The command must not silently install host dependencies. For every missing dependency it must:
+
+1. identify what is missing;
+2. explain why it is required;
+3. identify the trusted installation source/method appropriate to the host;
+4. request human approval before changing the host;
+5. install only after approval;
+6. verify the dependency after installation before continuing.
+
+Dependency installation itself is not a destructive-phone boundary, but it is an external mutation of the host and therefore requires explicit approval.
+
 ## Execution adapter
 
 ```mermaid
@@ -119,76 +129,67 @@ The command must consult current official GrapheneOS documentation at execution/
 
 ## State requirements
 
-The implementation must represent or be able to reconstruct these stages:
+The implementation must represent or reconstruct these stages:
 
 1. `waiting-for-device`
 2. `device-detected`
-3. `device-validated`
-4. `prerequisites-validated`
-5. `release-resolved`
-6. `awaiting-destructive-approval`
-7. `bootloader-prepared`
-8. `release-verified`
-9. `flashing`
-10. `awaiting-device-confirmation`
-11. `bootloader-relocked`
-12. `installation-verified`
-13. `complete`
+3. `dependencies-validating`
+4. `awaiting-dependency-install-approval` when needed
+5. `dependencies-validated`
+6. `device-validated`
+7. `release-resolved`
+8. `awaiting-destructive-approval`
+9. `bootloader-prepared`
+10. `release-verified`
+11. `flashing`
+12. `awaiting-device-confirmation`
+13. `bootloader-relocked`
+14. `installation-verified`
+15. `complete`
 
-A restart should prefer re-detecting real device state over trusting stale local state.
+A restart should prefer re-detecting real host/device state over trusting stale local state.
 
 ## Safety invariants
 
 ```mermaid
 flowchart TD
-  Step["Next operation"] --> Destructive{"Can it wipe, unlock, flash, or change security state?"}
-  Destructive -->|No| Execute["Execute after validation"]
-  Destructive -->|Yes| Approval["Explain exact effect and request explicit human approval"]
+  Step["Next operation"] --> Mutation{"Changes host or phone?"}
+  Mutation -->|No| Execute["Execute after validation"]
+  Mutation -->|Yes| Approval["Explain exact effect and request explicit human approval"]
   Approval --> Approved{"Approved?"}
   Approved -->|No| Stop["Do not execute"]
   Approved -->|Yes| Execute
 ```
 
-The command must never:
-
-- guess a device model;
-- flash an image for a different device;
-- use an unverified release artifact;
-- silently unlock or relock a bootloader;
-- silently cross a data-wipe boundary;
-- bypass Pixel/GrapheneOS security protections;
-- claim success without verifying the resulting device state.
+The command must never guess a device model, flash an image for a different device, use an unverified release artifact, silently install host dependencies, silently unlock/relock a bootloader, silently cross a data-wipe boundary, bypass device security protections, or claim success without verification.
 
 ## Release resolution
 
-The command must determine the currently supported stable GrapheneOS release appropriate for the detected device from authoritative GrapheneOS sources. It must not assume that a version recorded when this repository was authored is still current.
-
-Before flashing, the implementation must perform the artifact/signature verification required by the current official GrapheneOS CLI procedure.
+The command must determine the currently supported stable GrapheneOS release appropriate for the detected device from authoritative GrapheneOS sources. Before flashing, perform the artifact/signature verification required by the current official GrapheneOS CLI procedure.
 
 ## Human interaction contract
 
-Prompts must describe **what the user needs to do next**, not merely report an error.
+Prompts must describe what the user needs to do next, not merely report an error. After each human action, re-detect actual state before continuing.
 
 Examples:
 
 - `No Android device detected. Connect your Pixel directly with a USB data cable, unlock the screen if needed, then tell me to continue.`
+- `Android Platform Tools are required but fastboot is not available. I can install the required package from the trusted host package/source. Continue?`
 - `I detected Pixel <model>. The next stage requires bootloader unlocking and will erase the phone. Continue?`
-- `The phone is waiting for physical confirmation. Approve the highlighted bootloader action on the Pixel, then tell me when it is complete.`
-
-After each human action, re-detect state before continuing.
 
 ## Completion criteria
 
 ```mermaid
 flowchart TD
-  Flash["Flash completed"] --> Boot["Device boots GrapheneOS"]
+  Dependencies["Dependencies verified"] --> Flash["Flash completed"]
+  Flash --> Boot["Device boots GrapheneOS"]
   Boot --> Lock["Expected bootloader state verified"]
   Lock --> Identity["Installed OS/device identity verified"]
   Identity --> Report["Final evidence reported"]
   Report --> Complete["Complete"]
 ```
 
-The command is complete only when observable evidence confirms the expected GrapheneOS installation and required bootloader/security state. A completed flashing process alone is not sufficient.
+The command is complete only when dependencies are verified and observable evidence confirms the expected GrapheneOS installation and required bootloader/security state.
 
 ## Future scope
 
