@@ -1,24 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cat <<'EOF'
-install-grapheneos 0.0.0 [DRAFT]
+COMMAND_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RUNTIME="$COMMAND_DIR/../../runtime/command-runtime.sh"
 
-NOT READY FOR USE
-GrapheneOS installation is not implemented or tested yet.
-This command currently documents the intended workflow only.
-No device changes will be performed.
-EOF
+if [[ ! -f "$RUNTIME" ]]; then
+  echo "ERROR: shared AI Commands runtime not found: $RUNTIME" >&2
+  exit 2
+fi
 
-echo
-echo "Planned implementation:"
-echo "  1. Verify adb/fastboot prerequisites"
-echo "  2. Detect exactly one connected device"
-echo "  3. Identify exact Pixel model and boot state"
-echo "  4. Validate current GrapheneOS support/documentation"
-echo "  5. Verify release artifacts"
-echo "  6. STOP for human approval before destructive operations"
-echo "  7. Install using the official GrapheneOS procedure"
-echo "  8. Verify OS and bootloader/security state"
+# shellcheck source=/dev/null
+source "$RUNTIME"
+ai_command_require_runnable "$COMMAND_DIR/version.json" || exit $?
 
-exit 0
+# Execution below this line is reachable only for runnable command versions.
+# GrapheneOS implementation will be added from install-grapheneos.spec.md.
+
+echo "GrapheneOS installer implementation is not available yet."
+exit 2
