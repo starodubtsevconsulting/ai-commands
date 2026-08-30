@@ -10,7 +10,7 @@ flowchart TD
 **Use `show-context` to explain relevant context to a human.**
 
 It is a generic presentation command for turning bounded evidence
-into a human-readable report. It is useful on its own and as the presentation
+into a human-readable report. It is useful on its own and as the final visual
 layer of code review, investigation, handoff, architecture, and testing flows.
 
 **Usually:** inspect relevant folders, source material, conversation history,
@@ -20,7 +20,7 @@ has access to—and responsibility for—the relevant knowledge. The
 [`agents` command](../agents/README.md) explains the shared identity,
 capability, context-boundary, and communication rules for that connection.
 
-## Published package
+## Portable package
 
 ```mermaid
 flowchart TD
@@ -29,30 +29,18 @@ flowchart TD
   Template --> Python["show-context.py"]
   Python --> Wrapper["show-context.portable.sh"]
   Wrapper --> Installer["install.sh + requirements.txt"]
-  Installer --> Tests["Automated test + live scenario"]
-  Tests --> Outcome["Portable executable command"]
+  Installer --> Test["show-context.python.test.sh"]
+  Test --> Outcome["Portable executable command"]
 ```
 
-- [`show-context.command.md`](show-context.command.md) defines intent, mapping,
-  report structure, safety boundaries, and completion.
-- [`show-context.report.template.md`](show-context.report.template.md) is a
-  visual-first starting point for reports.
-- `show-context.py` renders the report as browser-readable HTML using Python's
-  standard library.
-- `show-context.portable.sh` uses the isolated command environment when present
-  and falls back to an available system Python.
-- `install.sh` installs only the dependency declared in `requirements.txt`
-  inside a command-local environment.
-- `show-context.python.test.sh` verifies the portable renderer.
-- `show-context.scenario.md` verifies the clean-install, browser-visible user
-  experience through an agent-run live scenario.
+The portable layer consists of the command contract, visual-first report
+template, standard-library Python renderer, and its test. It requires Python 3
+and an HTML viewer or browser. Mermaid loads from a public CDN when network
+access is available; diagram source remains readable without it. Pygments is an
+optional enhancement and is never required to generate a report.
 
-This public extraction includes the portable renderer but excludes private
-project discovery, session state, meeting-folder conventions, and launcher
-integration.
-
-The renderer preserves nested Markdown fences. This allows exact Markdown source containing inner Mermaid or code fences
-to remain literal inside an outer `markdown` block instead of leaking into the report as executable diagram markup.
+The renderer does not assume a profile, organization, operating system, package
+manager, or local directory.
 
 ## Browser example
 
@@ -71,24 +59,10 @@ report opens as a readable browser page. The example source is intentionally a
 portable relative path; generated reports must not expose private machine paths
 or unrelated context.
 
-## Prerequisites
-
-```mermaid
-flowchart TD
-  Package["Contract, template, and Python renderer"]
-  Package --> Python["Python 3"]
-  Python --> Viewer["Browser or HTML viewer"]
-  Viewer --> Ready["Ready to render"]
-```
-
-The published executable requires Python 3 and a browser or HTML viewer. The
-standard-library fallback works without command-specific installation.
-Pygments is optional and improves code colors; without it, code remains escaped
-and readable. For reproducible highlighting, run `./install.sh` after granting
-installation and network authority. It creates a command-local `.venv` and does
-not write into the global Python environment. Mermaid loads from a public CDN
-when network access is available, and diagram source remains readable without
-it.
+For reproducible syntax highlighting, run `./install.sh` once and invoke
+`./show-context.portable.sh ...`. Without installation, the wrapper uses an
+available system Python and still produces readable escaped code. Installation
+never writes into the global Python environment.
 
 ## How rendering works
 
@@ -112,18 +86,50 @@ the source. Use `--output <path>` to place generated reports in a temporary,
 ignored, or command-owned output folder. Generated HTML is runtime output and
 should not be committed.
 
+## Private package extensions
+
+```mermaid
+flowchart TD
+  Contract["show-context.command.md"]
+  Contract --> Template["show-context.report.template.md"]
+  Template --> Renderer["show-context.command.sh"]
+  Renderer --> Test["show-context.command.test.sh"]
+  Test --> Outcome["Portable verified command"]
+```
+
+- [`show-context.command.md`](show-context.command.md) defines intent, mapping,
+  report structure, safety boundaries, and completion.
+- [`show-context.report.template.md`](show-context.report.template.md) is the
+  smallest visual-first report starting point.
+- `show-context.command.sh` renders evidence to HTML; local private bundles may
+  extend it with project discovery or shared-file integrations.
+- `show-context.command.test.sh` verifies the portable rendering contract.
+- `show-context.portable.sh` uses the isolated command environment when present
+  and a readable standard-library fallback otherwise.
+- `install.sh` creates that local environment and installs only the dependency
+  declared in `requirements.txt`.
+
 ## Quick start
 
 ```mermaid
 flowchart TD
-  Copy["Copy the report template"]
-  Copy --> Replace["Replace the diagram and explanation"]
-  Replace --> Trim["Remove unused evidence or decision sections"]
-  Trim --> Share["Share the bounded context with a human"]
+  Copy["Copy and edit the report template"]
+  Copy --> Render["Render with --file"]
+  Render --> Inspect["Open the HTML or use --no-open"]
 ```
 
-Start with the template, answer one question, lead with the smallest useful
-visual, and include only evidence that supports understanding.
+```bash
+./show-context.command.sh \
+  --file show-context.report.template.md \
+  --title "Review context" \
+  --request "What should the reader understand?"
+```
+
+Without the private renderer, copy `show-context.report.template.md`, replace
+its placeholder diagram and explanation, remove unused sections, and present the
+resulting Markdown using the host's normal preview or browser surface.
+
+The portable renderer works directly:
 
 ```bash
 python3 show-context.py \
@@ -131,3 +137,23 @@ python3 show-context.py \
   --title "Review context" \
   --request "What should the human understand?"
 ```
+
+## Prerequisites
+
+```mermaid
+flowchart TD
+  Private["Private executable renderer"]
+  Private --> Python["Python runtime"]
+  Python --> Browser["Browser or HTML viewer"]
+  Browser --> Optional["Optional Pygments and network-rendered Mermaid"]
+```
+
+The private renderer checks its runtime at execution. Python and an HTML viewer
+are required. Pygments is optional and falls back to built-in highlighting.
+Mermaid and browser-side syntax highlighting currently load from public CDNs,
+so rich rendering needs network access; the report remains readable as HTML and
+exposes Mermaid source when those resources are unavailable.
+
+Optional meeting discovery is disabled by default. Configure it with
+`--meetings-dir <path>` or `SHOW_CONTEXT_MEETINGS_DIR`; the renderer does not
+assume a meeting provider or a location inside the user's home directory.
