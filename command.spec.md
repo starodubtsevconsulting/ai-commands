@@ -2,59 +2,90 @@
 
 Common contract for reusable AI Commands.
 
-## Prompt / intent scenarios
+## Input contract
 
-Every AI Command MUST contain a prompt/intent scenario table describing representative natural-language requests that map to the command's bounded actions.
-
-This is the command-level MCP-like discovery/routing surface. It allows callers such as Command Runner to understand that different Human/agent wording refers to the same command/action without requiring the caller to know implementation syntax.
+Every AI Command MUST define its inputs explicitly, even when it has no command-specific inputs.
 
 Required template:
+
+| Input | Required | Meaning |
+| --- | --- | --- |
+|  |  |  |
+
+Inputs are the command's semantic contract, not necessarily CLI flags/function parameters. Runtime/harness adapters may map them to concrete invocation mechanisms.
+
+Rules:
+
+- required inputs are explicit;
+- missing required input causes clarification/`BLOCKED`, not guessing;
+- source/project/harness/target identifiers are declared when the command depends on them;
+- inputs do not grant authority; authorization is evaluated separately;
+- implementation-specific values should not be hard-coded into the reusable contract when a runtime mapping is appropriate.
+
+## Output contract
+
+Every AI Command MUST define what useful result it returns to its caller, including commands whose primary effect is observational or side-effecting.
+
+Required template:
+
+| Output | Meaning |
+| --- | --- |
+|  |  |
+
+Output is the **caller-usable semantic result**, not necessarily raw stdout/files/tool payloads.
+
+Examples:
+
+- source-control commit -> commit/reference/status;
+- logs -> bounded diagnostic evidence/summary;
+- ticket-tracker create -> ticket identifier + resulting state;
+- computer-use observe -> bounded visual/UI observation report;
+- side-effect-only operation -> success/failure/status evidence.
+
+A command SHOULD return enough structured evidence for the caller to reason about what happened without exposing unnecessary raw data.
+
+## Prompt / intent scenarios
+
+Every AI Command MUST contain a prompt/intent scenario table describing representative natural-language requests that map to bounded actions.
 
 | Example prompt / intent | Command action | Required inputs / context | Result / notes |
 | --- | --- | --- | --- |
 |  |  |  |  |
 
-The section MUST remain present even when no scenarios have been defined yet.
-
-Rules:
-
-- mappings are semantic examples, not exact-string matching;
-- scenarios describe only actions actually owned by this command;
-- a scenario MUST NOT grant authority to invoke the command;
-- missing required context causes clarification/`BLOCKED`, not guessing;
-- workflow/team routing decides whether/when a role reaches this command;
-- Command Runner may use these mappings to resolve natural-language intent to the command/action;
-- command-specific inputs, validation and execution remain defined by the command itself.
-
-Example for `logs`:
-
-| Example prompt / intent | Command action | Required inputs / context | Result / notes |
-| --- | --- | --- | --- |
-| "Show me why this service failed" | retrieve diagnostics | service/runtime + useful time/context | bounded diagnostic result |
-| "Get the logs around this error" | retrieve filtered logs | error/time/service context | bounded log evidence |
+Mappings are semantic examples, not exact-string matching. They do not grant authority. Workflow/team routing decides whether/when a role reaches the command.
 
 ## Command result policy
 
-Every AI Command MUST declare how its result/output should be handled by callers such as Command Runner.
+Every command declares how output is handled by callers such as Command Runner.
 
 | Property | Meaning |
 | --- | --- |
 | `preserve-raw-output` | Whether raw/detailed output should be preserved/referenced when available. |
-| `result-mode` | Caller-facing result style such as `summary`, `bounded`, or `reference`. |
+| `result-mode` | Caller-facing style such as `summary`, `bounded`, or `reference`. |
 
-Command Runner follows the selected command's result policy. Runtime may impose stricter size/privacy/storage limits.
+The **Output contract** says *what the command returns*. The **Result policy** says *how that result/raw evidence is delivered/preserved*.
 
 ## Command delegation — not granted by default
 
-An AI Command may call/delegate to another AI Command only when explicitly granted by the calling command.
+An AI Command may call another AI Command only when explicitly granted.
 
 `dependency not listed -> command may not call it`
 
-Explicit `forbidden` documents intentional no-go; omission means not granted.
-
 ## Required command sections
 
-Every command README/spec MUST contain all of the following, even when a table is empty:
+Every command README/spec MUST contain these sections even when tables are empty:
+
+### Inputs
+
+| Input | Required | Meaning |
+| --- | --- | --- |
+|  |  |  |
+
+### Outputs
+
+| Output | Meaning |
+| --- | --- |
+|  |  |
 
 ### Prompt / intent scenarios
 
@@ -77,22 +108,19 @@ result-mode: <mode>
 
 ## Effective authority
 
-Nested command calls require all applicable gates:
-
 `caller/workflow authorization + calling-command delegation grant + called-command/runtime authorization -> execute`
 
-A prompt mapping or command dependency cannot broaden caller authority.
+Input/output definitions and prompt mappings cannot broaden authority.
 
 ## Minimum acceptance checklist
 
-- [ ] Prompt/intent scenario section/table exists even if empty.
-- [ ] Representative natural-language intents are mapped when known.
+- [ ] Inputs table exists and required inputs are explicit.
+- [ ] Outputs table defines caller-usable semantic result.
+- [ ] Missing required input blocks/clarifies rather than guesses.
+- [ ] Prompt/intent table exists even if empty.
 - [ ] Prompt mappings do not create authority.
-- [ ] Missing required context blocks/clarifies rather than guesses.
 - [ ] Result policy exists.
-- [ ] `preserve-raw-output` is explicitly true/false.
-- [ ] `result-mode` is declared.
-- [ ] Command delegation section/table exists even if empty.
+- [ ] `preserve-raw-output` and `result-mode` are declared.
+- [ ] Command delegation table exists even if empty.
 - [ ] Every nested AI Command call is explicitly allowed.
-- [ ] Missing dependency means not granted.
-- [ ] Nested calls cannot bypass caller/workflow/runtime authorization.
+- [ ] Nested calls cannot bypass authorization.
