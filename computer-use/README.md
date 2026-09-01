@@ -1,36 +1,66 @@
 # Computer Use
 
-Reusable AI Command for observing and interacting with a graphical user interface through capabilities supplied by the active AI harness/runtime.
+Reusable AI Command for observing/interacting with an **already available graphical target** through capabilities supplied by the selected AI harness/runtime.
 
-This command is intentionally **harness-aware at runtime but harness-independent in its contract**.
+The command is harness-aware at runtime but harness-independent in its contract.
+
+## Inputs
+
+| Input | Required | Meaning |
+| --- | --- | --- |
+| `harness` | yes | Harness/runtime implementation to use, e.g. `codex`, `claude-code`, `hermes`, `pi`, or a future registered harness name. |
+| `source` | yes | Active workflow source/project identifier whose UI/context is being observed. |
+| `target` | yes | Already available UI target/session, e.g. desktop application/window, browser/tab/page, or runtime-specific target reference. |
+| `goal` | yes | Bounded observation/interaction objective. |
+| `interaction_scope` | no | Additional allowed interaction boundary when needed. |
+
+Harness names are runtime identifiers, not permanent enum values in this specification. Implementations may add/retire harness adapters without changing the command's conceptual contract.
 
 ## Harness capability model
 
-`computer-use` does not assume that GUI access is implemented by a shell program or by this repository.
+`computer-use` does not assume GUI access is implemented by a shell program or this repository. Harness may expose it through built-in capability, plugin, MCP/tool, desktop/browser control, screenshots or another mechanism.
 
-The active AI **harness** may expose computer-use/vision through built-in capabilities, plugins, MCP/tools, desktop/browser control, screenshots or another provider-specific mechanism.
+`computer-use(harness, source, target, goal) -> harness adapter -> actual vision/desktop/browser capability`
 
-Examples of harness/runtime families include Codex, Claude Code, Hermes and Pi-based harnesses. Their concrete capabilities and plugin mechanisms can differ and change over time; runtime adapters map this command contract to what the selected harness actually supports.
+If requested harness is unknown, unavailable, lacks compatible capability or is not authorized, return `BLOCKED`.
 
-Conceptually:
+## Source/project context
 
-`AI Command: computer-use -> runtime/harness adapter -> available vision/desktop/browser capability`
+`source` identifies the concrete workflow subject/project. Runtime resolves source-specific context needed to understand the target, but this command does not own project startup/lifecycle.
 
-If the active harness has no authorized compatible capability, return `BLOCKED` rather than pretending GUI access exists.
+For example, source configuration may tell the caller/runtime which product/workspace is active and where related acceptance assets live. It does not imply `computer-use` should start that product.
+
+## Target and startup boundary
+
+`computer-use` is primarily an **observe/interact** command, not a launcher.
+
+The target MUST normally already exist and be reachable through the selected harness:
+
+- running desktop application/window;
+- existing browser/tab/page;
+- another registered graphical session/target.
+
+If target is absent/not running, return `BLOCKED` with the missing prerequisite. Starting a project/application/server/browser belongs to a separate lifecycle/launch capability or workflow flow unless a future explicit command extension says otherwise.
+
+This keeps responsibilities clear:
+
+`prepare/start target -> computer-use observes/interacts with target`
+
+not:
+
+`computer-use guesses how to launch every possible product`
 
 ## Prompt / intent scenarios
 
 | Example prompt / intent | Command action | Required inputs / context | Result / notes |
 | --- | --- | --- | --- |
-| "Look at this screen" | observe current UI | active target/session | bounded visual/UI observations |
-| "Open settings and inspect this option" | interact + observe | target + allowed interaction scope | bounded observations/actions |
-| "Learn how this UI flow works" | exploratory interaction | target + goal + allowed scope | structured observations usable by caller |
+| "Look at this screen" | observe current UI | harness + source + target + goal | bounded observations |
+| "Open settings and inspect this option" | interact + observe | harness + source + target + goal/scope | bounded actions/observations |
+| "Learn how this UI flow works" | exploratory interaction | harness + source + target + goal | structured observations |
 
 ## Intended use
 
-This is a bounded capability command, not a permanent substitute for deterministic automation.
-
-A caller such as UI Acceptance Tester may use it to discover/relearn a UI and then encode that knowledge into stable automation (for example project-owned Playwright tests/helpers). Subsequent repeatable verification should normally use the encoded automation when available.
+A caller such as UI Acceptance Tester may use this command to discover/relearn a UI and then encode that knowledge into stable project-owned automation such as Playwright tests/helpers. Repeatable verification should normally use encoded automation when available.
 
 ## Result policy
 
@@ -39,7 +69,7 @@ preserve-raw-output: false
 result-mode: bounded
 ```
 
-Screenshots/video/large visual traces are not automatically retained by this command contract. A runtime/project may explicitly preserve evidence when required by an authorized flow.
+Large visual traces are not automatically retained. Runtime/project may preserve authorized evidence explicitly.
 
 ## Command delegation
 
@@ -52,8 +82,9 @@ No nested AI Command dependency is granted by default.
 ## Boundaries
 
 - Requires explicit caller/workflow/runtime authorization.
-- Runtime/harness determines available computer-use implementation.
+- Requires explicit `harness`, `source`, `target`, and `goal`.
+- Does not launch/start arbitrary projects or applications.
 - Does not bypass OS/application permissions or harness safety controls.
-- Does not infer that a capability exists merely because another harness supports it.
-- Returns bounded observations/results to avoid unnecessarily flooding caller context.
-- Product-specific selectors/test code belong to the project, not this reusable command.
+- Does not infer capability merely because another harness supports it.
+- Returns bounded results to protect caller context.
+- Product-specific selectors/test code belong to project, not this command.
