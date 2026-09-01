@@ -4,59 +4,85 @@ Common contract for reusable AI Commands.
 
 Related infrastructure:
 
-- [AI Profiles](https://github.com/starodubtsevconsulting/ai-profiles) — profile/environment context.
+- [AI Profiles](https://github.com/starodubtsevconsulting/ai-profiles) — profile/environment/provider configuration.
 - [AI Workflows](https://github.com/starodubtsevconsulting/ai-workflows) — workflow, team and source/project context.
 
 ## Common execution context
 
-AI Commands in this ecosystem are generally **profile-, workflow-, and source/project-aware**.
-
-Most commands therefore execute within a common context such as:
+AI Commands are generally profile-, workflow-, and source/project-aware:
 
 `profile -> workflow -> source/project -> command-specific inputs`
 
-These values identify **where and under what AI configuration the command is operating**. They should normally be inherited/resolved from the active runtime/session rather than repeatedly invented by each command.
-
-Typical common context:
-
 | Context | Meaning |
 | --- | --- |
-| `profile` | Active AI profile/environment/configuration. See AI Profiles. |
-| `workflow` | Active reusable workflow/team context. See AI Workflows. |
-| `source` / `project` | Concrete workflow subject. In Software Development this is commonly a project; other workflows may use another source type. |
+| `profile` | Active AI profile/environment/configuration. |
+| `workflow` | Active reusable workflow/team context. |
+| `source` / `project` | Concrete workflow subject/project. |
 
-A command MAY require additional context such as repository/location, harness, target, ticket or runtime/service. Those remain command-specific inputs.
+These should normally be inherited/resolved from active runtime/session.
 
-Individual command documentation SHOULD reference/inherit this common context rather than repeating long definitions, while its Inputs table remains complete enough to show what the command expects.
+## Provider abstraction
+
+Many AI Commands are stable **generic/umbrella contracts** over interchangeable concrete systems. The concrete system is called a **provider**.
+
+Examples:
+
+| Command capability | Example providers |
+| --- | --- |
+| logs / observability | Datadog, local logs, cloud logging, other registered observability provider |
+| source control | Git, another registered source-control provider |
+| ticket tracking | Jira, Trello, GitHub Issues, another registered tracker |
+| computer use | harness/runtime-specific computer-use adapter |
+
+The command defines **what capability means**. Provider adapter defines **how that capability is performed for a concrete system**.
+
+`generic command -> provider resolution -> provider adapter -> concrete system`
+
+Provider names are open runtime identifiers, not permanent enums in the reusable specification.
+
+A command MAY accept an explicit `provider`, but callers normally should not need to supply infrastructure already configured for active profile/workflow/source.
+
+Recommended resolution:
+
+`explicit provider -> source/project override -> workflow/profile configuration -> runtime default if explicitly defined -> BLOCKED`
+
+Provider-specific endpoints, credentials, repository mappings, service names and similar details belong to profile/project/runtime configuration rather than reusable command prose.
+
+A command using another generic command does not need to understand the nested command's concrete provider. For example:
+
+`code-review -> source-control -> provider=Git (resolved from context)`
+
+Code Review asks Source Control for bounded evidence; Source Control resolves whether that means Git or another configured provider.
 
 ## Input contract
 
-Every AI Command MUST define its inputs explicitly, even when it has no command-specific inputs.
+Every AI Command MUST define inputs explicitly, even when it has no command-specific inputs.
 
 | Input | Required | Meaning |
 | --- | --- | --- |
 |  |  |  |
 
-Inputs are semantic contract, not necessarily CLI flags/function parameters. Runtime/harness adapters may map them to concrete invocation mechanisms.
+Inputs are semantic contract, not necessarily CLI flags/function parameters.
 
 Rules:
 
 - required inputs are explicit;
 - missing required input causes clarification/`BLOCKED`, not guessing;
 - common profile/workflow/source context is used when applicable;
+- `provider` is explicit/optional where capability has interchangeable implementations;
 - command-specific source/project/harness/target identifiers are declared when needed;
 - inputs do not grant authority;
 - implementation-specific values are runtime-mapped when appropriate.
 
 ## Output contract
 
-Every AI Command MUST define what useful result it returns to caller, including observational/side-effecting commands.
+Every AI Command MUST define caller-usable semantic output, including observational/side-effecting commands.
 
 | Output | Meaning |
 | --- | --- |
 |  |  |
 
-Output is caller-usable semantic result, not necessarily raw stdout/files/tool payloads. Examples: commit reference/status, bounded logs evidence, ticket ID/state, UI observation report, or side-effect status evidence.
+A command may produce a report/result, mutation plus result/reference, behavioral effect, or explicitly no domain output.
 
 ## Prompt / intent scenarios
 
@@ -66,7 +92,7 @@ Every AI Command MUST contain representative natural-language intent mappings.
 | --- | --- | --- | --- |
 |  |  |  |  |
 
-Mappings are semantic examples and do not grant authority. Workflow/team routing decides whether/when a role reaches command.
+Mappings do not grant authority. Workflow/team routing decides whether/when a role reaches command.
 
 ## Command result policy
 
@@ -74,8 +100,6 @@ Mappings are semantic examples and do not grant authority. Workflow/team routing
 | --- | --- |
 | `preserve-raw-output` | Whether raw/detailed output should be preserved/referenced when available. |
 | `result-mode` | Caller-facing style such as `summary`, `bounded`, or `reference`. |
-
-Output contract says *what* command returns; Result policy says *how* result/raw evidence is delivered/preserved.
 
 ## Command delegation — not granted by default
 
@@ -122,18 +146,17 @@ result-mode: <mode>
 
 `caller/workflow authorization + calling-command delegation grant + called-command/runtime authorization -> execute`
 
-Input/output definitions and prompt mappings cannot broaden authority.
+Input/output/provider definitions and prompt mappings cannot broaden authority.
 
 ## Minimum acceptance checklist
 
 - [ ] Inputs table exists and required inputs are explicit.
 - [ ] Common profile/workflow/source context is represented when applicable.
-- [ ] Outputs table defines caller-usable semantic result.
-- [ ] Missing required input blocks/clarifies rather than guesses.
+- [ ] Provider is defined/resolvable when command abstracts interchangeable systems.
+- [ ] Provider-specific configuration remains outside reusable command contract.
+- [ ] Outputs table defines caller-usable semantic result/effect.
+- [ ] Missing required input/provider blocks/clarifies rather than guesses.
 - [ ] Prompt/intent table exists even if empty.
-- [ ] Prompt mappings do not create authority.
 - [ ] Result policy exists.
-- [ ] `preserve-raw-output` and `result-mode` are declared.
 - [ ] Command delegation table exists even if empty.
-- [ ] Every nested AI Command call is explicitly allowed.
 - [ ] Nested calls cannot bypass authorization.
