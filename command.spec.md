@@ -2,68 +2,80 @@
 
 Common contract for reusable AI Commands.
 
+Related infrastructure:
+
+- [AI Profiles](https://github.com/starodubtsevconsulting/ai-profiles) — profile/environment context.
+- [AI Workflows](https://github.com/starodubtsevconsulting/ai-workflows) — workflow, team and source/project context.
+
+## Common execution context
+
+AI Commands in this ecosystem are generally **profile-, workflow-, and source/project-aware**.
+
+Most commands therefore execute within a common context such as:
+
+`profile -> workflow -> source/project -> command-specific inputs`
+
+These values identify **where and under what AI configuration the command is operating**. They should normally be inherited/resolved from the active runtime/session rather than repeatedly invented by each command.
+
+Typical common context:
+
+| Context | Meaning |
+| --- | --- |
+| `profile` | Active AI profile/environment/configuration. See AI Profiles. |
+| `workflow` | Active reusable workflow/team context. See AI Workflows. |
+| `source` / `project` | Concrete workflow subject. In Software Development this is commonly a project; other workflows may use another source type. |
+
+A command MAY require additional context such as repository/location, harness, target, ticket or runtime/service. Those remain command-specific inputs.
+
+Individual command documentation SHOULD reference/inherit this common context rather than repeating long definitions, while its Inputs table remains complete enough to show what the command expects.
+
 ## Input contract
 
 Every AI Command MUST define its inputs explicitly, even when it has no command-specific inputs.
-
-Required template:
 
 | Input | Required | Meaning |
 | --- | --- | --- |
 |  |  |  |
 
-Inputs are the command's semantic contract, not necessarily CLI flags/function parameters. Runtime/harness adapters may map them to concrete invocation mechanisms.
+Inputs are semantic contract, not necessarily CLI flags/function parameters. Runtime/harness adapters may map them to concrete invocation mechanisms.
 
 Rules:
 
 - required inputs are explicit;
 - missing required input causes clarification/`BLOCKED`, not guessing;
-- source/project/harness/target identifiers are declared when the command depends on them;
-- inputs do not grant authority; authorization is evaluated separately;
-- implementation-specific values should not be hard-coded into the reusable contract when a runtime mapping is appropriate.
+- common profile/workflow/source context is used when applicable;
+- command-specific source/project/harness/target identifiers are declared when needed;
+- inputs do not grant authority;
+- implementation-specific values are runtime-mapped when appropriate.
 
 ## Output contract
 
-Every AI Command MUST define what useful result it returns to its caller, including commands whose primary effect is observational or side-effecting.
-
-Required template:
+Every AI Command MUST define what useful result it returns to caller, including observational/side-effecting commands.
 
 | Output | Meaning |
 | --- | --- |
 |  |  |
 
-Output is the **caller-usable semantic result**, not necessarily raw stdout/files/tool payloads.
-
-Examples:
-
-- source-control commit -> commit/reference/status;
-- logs -> bounded diagnostic evidence/summary;
-- ticket-tracker create -> ticket identifier + resulting state;
-- computer-use observe -> bounded visual/UI observation report;
-- side-effect-only operation -> success/failure/status evidence.
-
-A command SHOULD return enough structured evidence for the caller to reason about what happened without exposing unnecessary raw data.
+Output is caller-usable semantic result, not necessarily raw stdout/files/tool payloads. Examples: commit reference/status, bounded logs evidence, ticket ID/state, UI observation report, or side-effect status evidence.
 
 ## Prompt / intent scenarios
 
-Every AI Command MUST contain a prompt/intent scenario table describing representative natural-language requests that map to bounded actions.
+Every AI Command MUST contain representative natural-language intent mappings.
 
 | Example prompt / intent | Command action | Required inputs / context | Result / notes |
 | --- | --- | --- | --- |
 |  |  |  |  |
 
-Mappings are semantic examples, not exact-string matching. They do not grant authority. Workflow/team routing decides whether/when a role reaches the command.
+Mappings are semantic examples and do not grant authority. Workflow/team routing decides whether/when a role reaches command.
 
 ## Command result policy
-
-Every command declares how output is handled by callers such as Command Runner.
 
 | Property | Meaning |
 | --- | --- |
 | `preserve-raw-output` | Whether raw/detailed output should be preserved/referenced when available. |
 | `result-mode` | Caller-facing style such as `summary`, `bounded`, or `reference`. |
 
-The **Output contract** says *what the command returns*. The **Result policy** says *how that result/raw evidence is delivered/preserved*.
+Output contract says *what* command returns; Result policy says *how* result/raw evidence is delivered/preserved.
 
 ## Command delegation — not granted by default
 
@@ -115,6 +127,7 @@ Input/output definitions and prompt mappings cannot broaden authority.
 ## Minimum acceptance checklist
 
 - [ ] Inputs table exists and required inputs are explicit.
+- [ ] Common profile/workflow/source context is represented when applicable.
 - [ ] Outputs table defines caller-usable semantic result.
 - [ ] Missing required input blocks/clarifies rather than guesses.
 - [ ] Prompt/intent table exists even if empty.
