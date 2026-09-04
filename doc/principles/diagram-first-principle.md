@@ -20,7 +20,10 @@ relationship, state transition, decision, ownership boundary, or allowed and pro
 
 ```mermaid
 flowchart TD
-  Actor["Actor: author applying Diagram First"] --> Prerequisite["Prerequisite: identify the section's material routes and boundaries"]
+  Actor["Actor: author applying Diagram First"] --> RuleDoc{"Decision: rule document includes external rules?"}
+  RuleDoc -->|Yes| Included["Allowed: place Included rules as the first H2 after the H1"]
+  RuleDoc -->|No| Prerequisite["Prerequisite: identify the section's material routes and boundaries"]
+  Included --> Prerequisite
   Prerequisite --> Decision{"Decision: do diagram and prose cover the same material behavior?"}
   Decision -->|Allowed| Write["Allowed: keep the diagram compact and put exact constraints in the following prose"]
   Decision -->|Prohibited| Blocked["BLOCKED: do not publish decorative, partial, horizontal, or contradictory coverage"]
@@ -29,6 +32,9 @@ flowchart TD
 ```
 
 - Place the diagram before the prose it governs.
+- When a rule, policy, or contract document composes external rules, its first content and first H2 immediately after the
+  H1 must be `## Included rules`. List the canonical linked rules there before local purpose, behavior, or specialization.
+  A rule document with no external included rules does not add an empty section.
 - Mermaid flow diagrams declare exactly `flowchart TD`.
 - Show the actor or subject, prerequisite or input, decision where applicable, allowed route, prohibited or failure route,
   and terminal outcome.
@@ -40,6 +46,9 @@ flowchart TD
 - A diagram/prose mismatch or an uncovered behavioral section is a documentation defect and blocks validation.
 - Do not force a flowchart onto a glossary, flat reference list, field catalog, or other content without a meaningful flow or
   relationship. Use prose or a table for that content.
+- A section consisting only of a flat reference table does not require a diagram to explain the table. The exemption ends
+  when the section adds a behavioral flow, decision, state transition, ownership boundary, allowed route, or prohibited
+  route outside the table; that behavior requires the normal diagram-first coverage.
 - Do not use parentheses in Mermaid node labels because they can cause rendering failures.
 
 ## Fixture use
