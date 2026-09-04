@@ -1,5 +1,14 @@
 # Diagram First Principle
 
+## Included rules
+
+| Included rule | Required application |
+| --- | --- |
+| [Included Rules Principle](included-rules-principle.md) | Load and apply its explicit, transitive, fail-closed dependency semantics before this principle. |
+| Complete included-rule context | A missing, unreadable, partial, conflicting, remembered, or locally copied substitute is `BLOCKED_INCLUDED_RULE_CONTEXT`. |
+
+## Applicability
+
 ```mermaid
 flowchart TD
   Actor["Actor: documentation author or report producer"] --> Input["Input: behavioral or relational content"]
@@ -20,10 +29,7 @@ relationship, state transition, decision, ownership boundary, or allowed and pro
 
 ```mermaid
 flowchart TD
-  Actor["Actor: author applying Diagram First"] --> RuleDoc{"Decision: rule document includes external rules?"}
-  RuleDoc -->|Yes| Included["Allowed: place Included rules as the first H2 after the H1"]
-  RuleDoc -->|No| Prerequisite["Prerequisite: identify the section's material routes and boundaries"]
-  Included --> Prerequisite
+  Actor["Actor: author applying Diagram First"] --> Prerequisite["Prerequisite: identify the section's material routes and boundaries"]
   Prerequisite --> Decision{"Decision: do diagram and prose cover the same material behavior?"}
   Decision -->|Allowed| Write["Allowed: keep the diagram compact and put exact constraints in the following prose"]
   Decision -->|Prohibited| Blocked["BLOCKED: do not publish decorative, partial, horizontal, or contradictory coverage"]
@@ -32,9 +38,6 @@ flowchart TD
 ```
 
 - Place the diagram before the prose it governs.
-- When a rule, policy, or contract document composes external rules, its first content and first H2 immediately after the
-  H1 must be `## Included rules`. List the canonical linked rules there before local purpose, behavior, or specialization.
-  A rule document with no external included rules does not add an empty section.
 - Mermaid flow diagrams declare exactly `flowchart TD`.
 - Show the actor or subject, prerequisite or input, decision where applicable, allowed route, prohibited or failure route,
   and terminal outcome.

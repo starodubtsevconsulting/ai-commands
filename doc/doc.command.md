@@ -51,6 +51,7 @@ copied or invented rule fragment.
 
 | Principle | Select when | Canonical fixture |
 | --- | --- | --- |
+| Included Rules | A rule, policy, contract, or principle composes external rules. | [Included Rules](principles/included-rules-principle.md) |
 | Diagram First | Meaningful flow, relationship, state, decision, ownership, or route. | [Fixture](principles/diagram-first-principle.md) |
 | Project Context | Project documentation is created or updated. | [Context](principles/project-documentation-context-principle.md) |
 | Development Top-of-File Documentation | Documentation explains source or runtime behavior. | [Top of File](principles/development-top-of-file-documentation-principle.md) |
@@ -84,12 +85,12 @@ guide selects Project Documentation Context and Development Top-of-File Document
 catalog may omit Diagram First. A runnable utility selects Companion File Documentation and adds its exact invocation
 contract. The fixture must name its selected principles so authors and validators resolve the canonical files directly.
 
-Principles remain independent: a principle must not reference, select, or require another principle. The `doc` command or
-another explicit documentation fixture is the only composition layer. By default, an agent considers every cataloged
-principle, selects every one that is applicable and compatible with the bounded purpose and evidence, and records why a
-relevant-looking principle is omitted. It must not blindly apply every principle when a principle's applicability rule does
-not match or when the combined fixture would conflict; the responsible agent reasons from the document purpose, reader,
-evidence, and its granted authority.
+Principles are independently selectable, but one principle may explicitly include another through an `Included rules`
+table. Such dependencies load transitively and fail closed on a missing source, partial load, cycle, conflict, or implicit
+override. The `doc` command or another explicit documentation fixture remains the composition entrypoint. By default, an
+agent considers every cataloged principle, selects every applicable and compatible one, follows its declared included
+rules, and records why a relevant-looking principle is omitted. It must not blindly apply every principle when an
+applicability rule does not match or when the combined fixture would conflict.
 
 ## General documentation rules
 

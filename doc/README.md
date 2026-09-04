@@ -8,9 +8,10 @@ flowchart TD
   Fixture --> Outcome["Project-grounded documentation"]
 ```
 
-The `doc` command provides a portable documentation contract, a deterministic project-readiness check, and four
+The `doc` command provides a portable documentation contract, a deterministic project-readiness check, and five
 independent reusable principles:
 
+- Included Rules for explicit transitive rule dependencies.
 - Diagram First for meaningful flows, decisions, relationships, and state.
 - Project Documentation Context for repository-grounded location and conventions.
 - Development Top-of-File Documentation for source and runtime behavior.

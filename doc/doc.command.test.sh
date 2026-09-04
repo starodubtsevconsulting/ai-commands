@@ -6,6 +6,7 @@ TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 COMMANDS_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PRINCIPLE="$SCRIPT_DIR/principles/diagram-first-principle.md"
+INCLUDED_RULES_PRINCIPLE="$SCRIPT_DIR/principles/included-rules-principle.md"
 PROJECT_CONTEXT_PRINCIPLE="$SCRIPT_DIR/principles/project-documentation-context-principle.md"
 CODE_PRINCIPLE="$SCRIPT_DIR/principles/development-top-of-file-documentation-principle.md"
 COMPANION_PRINCIPLE="$SCRIPT_DIR/principles/companion-file-documentation-principle.md"
@@ -16,23 +17,29 @@ printf '# Example project\n' > "$PROJECT/README.md"
 PROJECT_CANONICAL="$(cd "$PROJECT" && pwd -P)"
 
 [[ -f "$PRINCIPLE" ]]
+[[ -f "$INCLUDED_RULES_PRINCIPLE" ]]
 [[ -f "$PROJECT_CONTEXT_PRINCIPLE" ]]
 [[ -f "$CODE_PRINCIPLE" ]]
 [[ -f "$COMPANION_PRINCIPLE" ]]
 [[ ! -d "$COMMANDS_ROOT/docs" ]]
 
 grep -q '^# Diagram First Principle$' "$PRINCIPLE"
+grep -q '^## Included rules$' "$PRINCIPLE"
+grep -q 'included-rules-principle.md' "$PRINCIPLE"
+grep -q '^# Included Rules Principle$' "$INCLUDED_RULES_PRINCIPLE"
+grep -q 'BLOCKED_INCLUDED_RULE_CONTEXT' "$INCLUDED_RULES_PRINCIPLE"
 grep -q '^flowchart TD$' "$PRINCIPLE"
 grep -q '^## Rules$' "$PRINCIPLE"
 grep -q '^## Fixture use$' "$PRINCIPLE"
 grep -q 'principles/diagram-first-principle.md' "$SCRIPT_DIR/doc.command.md"
+grep -q 'principles/included-rules-principle.md' "$SCRIPT_DIR/doc.command.md"
 grep -q 'Documentation fixture composition' "$SCRIPT_DIR/doc.command.md"
 grep -q 'principles/project-documentation-context-principle.md' "$SCRIPT_DIR/doc.command.md"
 grep -q 'principles/development-top-of-file-documentation-principle.md' "$SCRIPT_DIR/doc.command.md"
 grep -q 'principles/companion-file-documentation-principle.md' "$SCRIPT_DIR/doc.command.md"
-grep -q 'Principles remain independent' "$SCRIPT_DIR/doc.command.md"
+grep -q 'one principle may explicitly include another' "$SCRIPT_DIR/doc.command.md"
 grep -q 'considers every cataloged' "$SCRIPT_DIR/doc.command.md"
-grep -q 'must not reference, select, or require another principle' "$SCRIPT_DIR/doc.command.md"
+grep -q 'dependencies load transitively and fail closed' "$SCRIPT_DIR/doc.command.md"
 grep -q '^## Supported Prompts$' "$SCRIPT_DIR/doc.command.md"
 grep -q 'Check documentation readiness for <project>' "$SCRIPT_DIR/doc.command.md"
 grep -q 'The diagram starts with a documentation author or reviewer' "$SCRIPT_DIR/doc.command.md"
